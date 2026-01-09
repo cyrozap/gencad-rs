@@ -1,0 +1,62 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/*
+ *  parse.rs - Parser demo for GenCAD files.
+ *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+use std::fs::File;
+use std::io::BufReader;
+
+use clap::Parser;
+
+use gencad::parser::*;
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// The file to read.
+    file: String,
+}
+
+fn main() {
+    let args = Args::parse();
+
+    let file = match File::open(&args.file) {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Error opening file {:?}: {:?}", &args.file, e);
+            return;
+        }
+    };
+
+    let reader = BufReader::new(file);
+    let parsed = match ParsedGencadFile::new(reader) {
+        Ok(pf) => pf,
+        Err(e) => {
+            eprintln!("Error parsing file {:?}: {:?}", &args.file, e);
+            return;
+        }
+    };
+
+    for section in parsed.sections {
+        print!("${}\r\n", section.name);
+        for param in section.parameters {
+            print!("{} {}\r\n", param.keyword, param.parameter);
+        }
+        print!("$END{}\r\n\r\n", section.name);
+    }
+}

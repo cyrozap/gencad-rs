@@ -1,0 +1,16 @@
+[package]
+name = "gencad"
+version = "0.1.0"
+authors = ["cyrozap"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+description = "A library for parsing Mitron GenCAD boardview files."
+repository = "https://github.com/cyrozap/gencad-rs"
+categories = ["parser-implementations"]
+edition = "2024"
+
+[dependencies]
+nom = "8.0.0"
+
+[dev-dependencies]
+clap = { version = "4.1.4", features = ["derive"] }
