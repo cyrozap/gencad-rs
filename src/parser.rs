@@ -93,7 +93,7 @@ fn section_end(input: &[u8]) -> IResult<&[u8], &str> {
 }
 
 /// A keyword/parameter pair.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct KeywordParam {
     /// The keyword that determines how to interpret the parameter.
     pub keyword: String,
@@ -118,7 +118,7 @@ impl KeywordParam {
 }
 
 /// A section in the GenCAD file.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Section {
     /// The name of the section.
     pub name: String,
