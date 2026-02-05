@@ -33,7 +33,7 @@ mod pad_type;
 mod rectangle_ref;
 mod string;
 mod text_par;
-mod util;
+pub mod util;
 mod x_y_ref;
 
 pub use aliases::*;

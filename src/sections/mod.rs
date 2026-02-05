@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+mod board;
 mod header;
 
+pub use board::*;
 pub use header::*;
