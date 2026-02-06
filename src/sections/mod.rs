@@ -21,7 +21,9 @@
 mod board;
 mod header;
 mod pads;
+mod shapes;
 
 pub use board::Board;
 pub use header::Header;
 pub use pads::parse_pads;
+pub use shapes::parse_shapes;
