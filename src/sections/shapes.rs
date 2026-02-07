@@ -191,7 +191,6 @@ enum ShapeParserState {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Shape {
-    state: ShapeParserState,
     pub name: String,
     pub elements: Vec<ShapeElement>,
     pub insert: Option<Insert>,
@@ -200,7 +199,13 @@ pub struct Shape {
     pub attributes: Vec<Attribute>,
 }
 
-impl Shape {
+#[derive(Debug, Clone, PartialEq)]
+struct ShapeParser {
+    state: ShapeParserState,
+    shape: Shape,
+}
+
+impl ShapeParser {
     fn from_parameters(
         params: &str,
         insert: Option<Insert>,
@@ -214,15 +219,16 @@ impl Shape {
         let subshapes = Vec::new();
         let attributes = Vec::new();
 
-        Ok(Self {
-            state,
+        let shape = Shape {
             name,
             elements,
             insert,
             height,
             subshapes,
             attributes,
-        })
+        };
+
+        Ok(Self { state, shape })
     }
 
     fn ingest(&mut self, kp: &KeywordParam) -> Result<(), Box<dyn std::error::Error>> {
@@ -231,50 +237,50 @@ impl Shape {
                 "LINE" => {
                     let (_, line) =
                         line_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.elements.push(ShapeElement::Line(line));
+                    self.shape.elements.push(ShapeElement::Line(line));
                     Ok(())
                 }
                 "ARC" => {
                     let (_, arc) = arc_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.elements.push(ShapeElement::Arc(arc));
+                    self.shape.elements.push(ShapeElement::Arc(arc));
                     Ok(())
                 }
                 "CIRCLE" => {
                     let (_, circle) =
                         circle_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.elements.push(ShapeElement::Circle(circle));
+                    self.shape.elements.push(ShapeElement::Circle(circle));
                     Ok(())
                 }
                 "RECTANGLE" => {
                     let (_, rectangle) =
                         rectangle_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.elements.push(ShapeElement::Rectangle(rectangle));
+                    self.shape.elements.push(ShapeElement::Rectangle(rectangle));
                     Ok(())
                 }
                 "FIDUCIAL" => {
                     let (_, fiducial) =
                         x_y_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.elements.push(ShapeElement::Fiducial(fiducial));
+                    self.shape.elements.push(ShapeElement::Fiducial(fiducial));
                     Ok(())
                 }
 
                 "INSERT" => {
                     let (_, insert) =
                         string(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.insert = Some(Insert::new(&insert)?);
+                    self.shape.insert = Some(Insert::new(&insert)?);
                     Ok(())
                 }
                 "HEIGHT" => {
                     let (_, height) =
                         height(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.height = Some(height);
+                    self.shape.height = Some(height);
                     Ok(())
                 }
 
                 "ATTRIBUTE" => {
                     let (_, attribute) =
                         attrib_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
-                    self.attributes.push(attribute);
+                    self.shape.attributes.push(attribute);
                     Ok(())
                 }
 
@@ -335,7 +341,7 @@ impl Shape {
     fn done(&mut self) {
         match &self.state {
             ShapeParserState::Shape => (),
-            ShapeParserState::SubShape(subshape) => self.subshapes.push(subshape.clone()),
+            ShapeParserState::SubShape(subshape) => self.shape.subshapes.push(subshape.clone()),
         }
         self.state = ShapeParserState::Shape;
     }
@@ -344,7 +350,7 @@ impl Shape {
 #[derive(Debug, Clone, PartialEq)]
 enum ShapesParserState {
     Reset,
-    Shape(Shape),
+    ShapeParser(ShapeParser),
 }
 
 struct ShapesParser {
@@ -366,13 +372,13 @@ impl ShapesParser {
     }
 
     fn ingest(&mut self, kp: &KeywordParam) -> Result<(), Box<dyn std::error::Error>> {
-        if let ShapesParserState::Shape(ref mut shape) = self.state {
+        if let ShapesParserState::ShapeParser(ref mut parser) = self.state {
             match kp.keyword.as_str() {
                 "SHAPE" => {
-                    shape.done();
-                    self.shapes.push(shape.clone());
-                    let shape = Shape::from_parameters(kp.parameter.as_str(), self.insert)?;
-                    self.state = ShapesParserState::Shape(shape);
+                    parser.done();
+                    self.shapes.push(parser.shape.clone());
+                    let parser = ShapeParser::from_parameters(kp.parameter.as_str(), self.insert)?;
+                    self.state = ShapesParserState::ShapeParser(parser);
                     Ok(())
                 }
                 "INSERT" => {
@@ -381,13 +387,13 @@ impl ShapesParser {
                     self.insert = Some(Insert::new(&insert)?);
                     Ok(())
                 }
-                _ => shape.ingest(kp),
+                _ => parser.ingest(kp),
             }
         } else {
             match kp.keyword.as_str() {
                 "SHAPE" => {
-                    let shape = Shape::from_parameters(kp.parameter.as_str(), self.insert)?;
-                    self.state = ShapesParserState::Shape(shape);
+                    let parser = ShapeParser::from_parameters(kp.parameter.as_str(), self.insert)?;
+                    self.state = ShapesParserState::ShapeParser(parser);
                     Ok(())
                 }
                 "INSERT" => {
@@ -402,9 +408,9 @@ impl ShapesParser {
     }
 
     fn finalize(mut self) -> Vec<Shape> {
-        if let ShapesParserState::Shape(mut shape) = self.state {
-            shape.done();
-            self.shapes.push(shape);
+        if let ShapesParserState::ShapeParser(mut parser) = self.state {
+            parser.done();
+            self.shapes.push(parser.shape);
             self.state = ShapesParserState::Reset;
         }
         self.shapes
@@ -481,7 +487,6 @@ mod tests {
         assert_eq!(
             shapes,
             vec![Shape {
-                state: ShapeParserState::Shape,
                 name: "CAP_SUPPRESS_TYPE_____24".to_string(),
                 elements: vec![
                     ShapeElement::Line(LineRef {
