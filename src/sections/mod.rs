@@ -22,6 +22,6 @@ mod board;
 mod header;
 mod pads;
 
-pub use board::*;
-pub use header::*;
-pub use pads::*;
+pub use board::Board;
+pub use header::Header;
+pub use pads::parse_pads;
