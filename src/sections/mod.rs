@@ -18,12 +18,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod board;
-mod header;
-mod pads;
-mod shapes;
-
-pub use board::Board;
-pub use header::Header;
-pub use pads::parse_pads;
-pub use shapes::parse_shapes;
+pub mod board;
+pub mod header;
+pub mod pads;
+pub mod shapes;
