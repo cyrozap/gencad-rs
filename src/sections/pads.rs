@@ -145,7 +145,7 @@ mod tests {
     use crate::types::{CircularArcRef, XYRef};
 
     #[test]
-    fn test_example_board() {
+    fn test_example_pads() {
         let params = vec![
             KeywordParam {
                 keyword: "PAD".to_string(),
