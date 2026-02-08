@@ -66,7 +66,7 @@ enum ParserState {
 }
 
 /// Parse the `PADS` section of a GenCAD file.
-pub fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn std::error::Error>> {
+pub(crate) fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn std::error::Error>> {
     let mut pads = Vec::new();
 
     let mut parser_state = ParserState::Init;

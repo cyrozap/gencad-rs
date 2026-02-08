@@ -96,7 +96,7 @@ fn section_end(input: &[u8]) -> IResult<&[u8], &str> {
 
 /// A keyword/parameter pair.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct KeywordParam<'a> {
+pub(crate) struct KeywordParam<'a> {
     /// The keyword that determines how to interpret the parameter.
     pub keyword: &'a str,
     /// The parameter associated with the keyword.

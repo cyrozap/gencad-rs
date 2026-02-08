@@ -42,40 +42,40 @@ macro_rules! number_alias {
 
 string_alias!(artwork_name);
 
-string_alias!(component_name);
+//string_alias!(component_name);
 
 number_alias!(drill_size);
 
 string_alias!(fid_name);
 
-string_alias!(filename);
+//string_alias!(filename);
 
 number_alias!(height);
 
 string_alias!(pad_name);
 
-string_alias!(part_name);
+//string_alias!(part_name);
 
 string_alias!(pin_name);
 
-string_alias!(probe);
+//string_alias!(probe);
 
 number_alias!(rot);
 
 string_alias!(shape_name);
 
-string_alias!(sig_name);
+//string_alias!(sig_name);
 
-string_alias!(tan);
+//string_alias!(tan);
 
-string_alias!(testpad_name);
+//string_alias!(testpad_name);
 
-string_alias!(tin);
+//string_alias!(tin);
 
-string_alias!(tp_name);
+//string_alias!(tp_name);
 
 string_alias!(track_name);
 
-number_alias!(track_width);
+//number_alias!(track_width);
 
-string_alias!(via_name);
+//string_alias!(via_name);

@@ -55,4 +55,4 @@
 
 pub mod parser;
 pub mod sections;
-pub mod types;
+pub(crate) mod types;

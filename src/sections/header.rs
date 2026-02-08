@@ -45,7 +45,7 @@ pub struct Header {
 }
 
 impl Header {
-    pub fn new(params: &[KeywordParam]) -> Result<Self, Box<dyn std::error::Error>> {
+    pub(crate) fn new(params: &[KeywordParam]) -> Result<Self, Box<dyn std::error::Error>> {
         let mut gencad_version = None;
         let mut user = None;
         let mut drawing = None;

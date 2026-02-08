@@ -409,7 +409,9 @@ impl ShapesParser {
 }
 
 /// Parse the `SHAPES` section of a GenCAD file.
-pub fn parse_shapes(params: &[KeywordParam]) -> Result<Vec<Shape>, Box<dyn std::error::Error>> {
+pub(crate) fn parse_shapes(
+    params: &[KeywordParam],
+) -> Result<Vec<Shape>, Box<dyn std::error::Error>> {
     let mut sp = ShapesParser::new();
     for param in params {
         sp.ingest(param)?;

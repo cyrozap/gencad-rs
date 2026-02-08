@@ -151,7 +151,7 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn new(params: &[KeywordParam]) -> Result<Self, Box<dyn std::error::Error>> {
+    pub(crate) fn new(params: &[KeywordParam]) -> Result<Self, Box<dyn std::error::Error>> {
         let mut thickness = None;
         let mut outline_shapes = Vec::new();
         let mut attributes = Vec::new();
