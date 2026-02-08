@@ -233,79 +233,72 @@ impl ShapeParser {
 
     fn ingest(&mut self, kp: &KeywordParam) -> Result<(), Box<dyn std::error::Error>> {
         match &mut self.state {
-            ShapeParserState::Shape => match kp.keyword.as_str() {
+            ShapeParserState::Shape => match kp.keyword {
                 "LINE" => {
-                    let (_, line) =
-                        line_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, line) = line_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.elements.push(ShapeElement::Line(line));
                     Ok(())
                 }
                 "ARC" => {
-                    let (_, arc) = arc_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, arc) = arc_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.elements.push(ShapeElement::Arc(arc));
                     Ok(())
                 }
                 "CIRCLE" => {
-                    let (_, circle) =
-                        circle_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, circle) = circle_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.elements.push(ShapeElement::Circle(circle));
                     Ok(())
                 }
                 "RECTANGLE" => {
                     let (_, rectangle) =
-                        rectangle_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        rectangle_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.elements.push(ShapeElement::Rectangle(rectangle));
                     Ok(())
                 }
                 "FIDUCIAL" => {
-                    let (_, fiducial) =
-                        x_y_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, fiducial) = x_y_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.elements.push(ShapeElement::Fiducial(fiducial));
                     Ok(())
                 }
 
                 "INSERT" => {
-                    let (_, insert) =
-                        string(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, insert) = string(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.insert = Some(Insert::new(&insert)?);
                     Ok(())
                 }
                 "HEIGHT" => {
-                    let (_, height) =
-                        height(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, height) = height(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.height = Some(height);
                     Ok(())
                 }
 
                 "ATTRIBUTE" => {
-                    let (_, attribute) =
-                        attrib_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, attribute) = attrib_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     self.shape.attributes.push(attribute);
                     Ok(())
                 }
 
                 "ARTWORK" => {
-                    let artwork = Artwork::from_parameters(kp.parameter.as_str())?;
+                    let artwork = Artwork::from_parameters(kp.parameter)?;
                     self.state = ShapeParserState::SubShape(SubShape::Artwork(artwork));
                     Ok(())
                 }
                 "FID" => {
-                    let fid = Fid::from_parameters(kp.parameter.as_str())?;
+                    let fid = Fid::from_parameters(kp.parameter)?;
                     self.state = ShapeParserState::SubShape(SubShape::Fid(fid));
                     Ok(())
                 }
                 "PIN" => {
-                    let pin = Pin::from_parameters(kp.parameter.as_str())?;
+                    let pin = Pin::from_parameters(kp.parameter)?;
                     self.state = ShapeParserState::SubShape(SubShape::Pin(pin));
                     Ok(())
                 }
 
                 _ => Err(format!("Unexpected keyword in shape: {}", kp.keyword).into()),
             },
-            ShapeParserState::SubShape(subshape) => match kp.keyword.as_str() {
+            ShapeParserState::SubShape(subshape) => match kp.keyword {
                 "ATTRIBUTE" => {
-                    let (_, attribute) =
-                        attrib_ref(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, attribute) = attrib_ref(kp.parameter).map_err(|err| err.to_owned())?;
                     match subshape {
                         SubShape::Artwork(a) => a.attributes.push(attribute),
                         SubShape::Fid(f) => f.attributes.push(attribute),
@@ -316,19 +309,19 @@ impl ShapeParser {
 
                 "ARTWORK" => {
                     self.done();
-                    let artwork = Artwork::from_parameters(kp.parameter.as_str())?;
+                    let artwork = Artwork::from_parameters(kp.parameter)?;
                     self.state = ShapeParserState::SubShape(SubShape::Artwork(artwork));
                     Ok(())
                 }
                 "FID" => {
                     self.done();
-                    let fid = Fid::from_parameters(kp.parameter.as_str())?;
+                    let fid = Fid::from_parameters(kp.parameter)?;
                     self.state = ShapeParserState::SubShape(SubShape::Fid(fid));
                     Ok(())
                 }
                 "PIN" => {
                     self.done();
-                    let pin = Pin::from_parameters(kp.parameter.as_str())?;
+                    let pin = Pin::from_parameters(kp.parameter)?;
                     self.state = ShapeParserState::SubShape(SubShape::Pin(pin));
                     Ok(())
                 }
@@ -373,32 +366,30 @@ impl ShapesParser {
 
     fn ingest(&mut self, kp: &KeywordParam) -> Result<(), Box<dyn std::error::Error>> {
         if let ShapesParserState::ShapeParser(ref mut parser) = self.state {
-            match kp.keyword.as_str() {
+            match kp.keyword {
                 "SHAPE" => {
                     parser.done();
                     self.shapes.push(parser.shape.clone());
-                    let parser = ShapeParser::from_parameters(kp.parameter.as_str(), self.insert)?;
+                    let parser = ShapeParser::from_parameters(kp.parameter, self.insert)?;
                     self.state = ShapesParserState::ShapeParser(parser);
                     Ok(())
                 }
                 "INSERT" => {
-                    let (_, insert) =
-                        string(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, insert) = string(kp.parameter).map_err(|err| err.to_owned())?;
                     self.insert = Some(Insert::new(&insert)?);
                     Ok(())
                 }
                 _ => parser.ingest(kp),
             }
         } else {
-            match kp.keyword.as_str() {
+            match kp.keyword {
                 "SHAPE" => {
-                    let parser = ShapeParser::from_parameters(kp.parameter.as_str(), self.insert)?;
+                    let parser = ShapeParser::from_parameters(kp.parameter, self.insert)?;
                     self.state = ShapesParserState::ShapeParser(parser);
                     Ok(())
                 }
                 "INSERT" => {
-                    let (_, insert) =
-                        string(kp.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, insert) = string(kp.parameter).map_err(|err| err.to_owned())?;
                     self.insert = Some(Insert::new(&insert)?);
                     Ok(())
                 }
@@ -437,48 +428,48 @@ mod tests {
     fn test_example_shape() {
         let params = vec![
             KeywordParam {
-                keyword: "SHAPE".to_string(),
-                parameter: "CAP_SUPPRESS_TYPE_____24".to_string(),
+                keyword: "SHAPE",
+                parameter: "CAP_SUPPRESS_TYPE_____24",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "-1000 200 -1000 -200".to_string(),
+                keyword: "LINE",
+                parameter: "-1000 200 -1000 -200",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "-1000 -200 1000 -200".to_string(),
+                keyword: "LINE",
+                parameter: "-1000 -200 1000 -200",
             },
             KeywordParam {
-                keyword: "ARC".to_string(),
-                parameter: "1000 -200 1000 200 1000 0".to_string(),
+                keyword: "ARC",
+                parameter: "1000 -200 1000 200 1000 0",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1000 200 -1000 200".to_string(),
+                keyword: "LINE",
+                parameter: "1000 200 -1000 200",
             },
             KeywordParam {
-                keyword: "PIN".to_string(),
-                parameter: "1 p102_4 -100 100 TOP 315 0".to_string(),
+                keyword: "PIN",
+                parameter: "1 p102_4 -100 100 TOP 315 0",
             },
             KeywordParam {
-                keyword: "PIN".to_string(),
-                parameter: "1 s106_6 -100 100 BOTTOM 315 MIRRORX".to_string(),
+                keyword: "PIN",
+                parameter: "1 s106_6 -100 100 BOTTOM 315 MIRRORX",
             },
             KeywordParam {
-                keyword: "PIN".to_string(),
-                parameter: "2 p102_4 100 -100 TOP 135 0".to_string(),
+                keyword: "PIN",
+                parameter: "2 p102_4 100 -100 TOP 135 0",
             },
             KeywordParam {
-                keyword: "PIN".to_string(),
-                parameter: "2 s106_6 100 -100 BOTTOM 135 MIRRORX".to_string(),
+                keyword: "PIN",
+                parameter: "2 s106_6 100 -100 BOTTOM 135 MIRRORX",
             },
             KeywordParam {
-                keyword: "ARTWORK".to_string(),
-                parameter: "PIN1_MARKER 0 400 0 0".to_string(),
+                keyword: "ARTWORK",
+                parameter: "PIN1_MARKER 0 400 0 0",
             },
             KeywordParam {
-                keyword: "FID".to_string(),
-                parameter: "PRIMARY OPTICAL1 0 0 TOP 0 0".to_string(),
+                keyword: "FID",
+                parameter: "PRIMARY OPTICAL1 0 0 TOP 0 0",
             },
         ];
 

@@ -45,7 +45,7 @@
  *
  *     // Access parsed data
  *     for section in parsed.sections {
- *         println!("{}", section.name);
+ *         println!("{:?}", section);
  *     }
  *
  *     Ok(())

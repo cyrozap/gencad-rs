@@ -23,7 +23,7 @@ use std::io::BufReader;
 
 use clap::Parser;
 
-use gencad::parser::*;
+use gencad::parser::ParsedGencadFile;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -53,10 +53,6 @@ fn main() {
     };
 
     for section in parsed.sections {
-        print!("${}\r\n", section.name);
-        for param in section.parameters {
-            print!("{} {}\r\n", param.keyword, param.parameter);
-        }
-        print!("$END{}\r\n\r\n", section.name);
+        println!("{:?}", section);
     }
 }

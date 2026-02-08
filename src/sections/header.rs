@@ -56,59 +56,52 @@ impl Header {
         let mut attributes = Vec::new();
 
         for param in params {
-            match param.keyword.as_str() {
+            match param.keyword {
                 "GENCAD" => {
                     if gencad_version.is_none() {
-                        let (_, value) =
-                            number(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = number(param.parameter).map_err(|err| err.to_owned())?;
                         gencad_version = Some(value);
                     }
                 }
                 "USER" => {
                     if user.is_none() {
-                        let (_, value) =
-                            string(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = string(param.parameter).map_err(|err| err.to_owned())?;
                         user = Some(value);
                     }
                 }
                 "DRAWING" => {
                     if drawing.is_none() {
-                        let (_, value) =
-                            string(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = string(param.parameter).map_err(|err| err.to_owned())?;
                         drawing = Some(value);
                     }
                 }
                 "REVISION" => {
                     if revision.is_none() {
-                        let (_, value) =
-                            string(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = string(param.parameter).map_err(|err| err.to_owned())?;
                         revision = Some(value);
                     }
                 }
                 "UNITS" => {
                     if units.is_none() {
                         let (_, value) =
-                            dimension(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                            dimension(param.parameter).map_err(|err| err.to_owned())?;
                         units = Some(value);
                     }
                 }
                 "ORIGIN" => {
                     if origin.is_none() {
-                        let (_, value) =
-                            x_y_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = x_y_ref(param.parameter).map_err(|err| err.to_owned())?;
                         origin = Some(value);
                     }
                 }
                 "INTERTRACK" => {
                     if intertrack.is_none() {
-                        let (_, value) =
-                            number(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = number(param.parameter).map_err(|err| err.to_owned())?;
                         intertrack = Some(value);
                     }
                 }
                 "ATTRIBUTE" => {
-                    let (_, value) =
-                        attrib_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, value) = attrib_ref(param.parameter).map_err(|err| err.to_owned())?;
                     attributes.push(value);
                 }
                 _ => {}
@@ -144,40 +137,40 @@ mod tests {
     fn test_valid_header() {
         let params = vec![
             KeywordParam {
-                keyword: "GENCAD".to_string(),
-                parameter: "1.4".to_string(),
+                keyword: "GENCAD",
+                parameter: "1.4",
             },
             KeywordParam {
-                keyword: "USER".to_string(),
-                parameter: "\"Mitron Europe Ltd. Serial Number 00001\"".to_string(),
+                keyword: "USER",
+                parameter: "\"Mitron Europe Ltd. Serial Number 00001\"",
             },
             KeywordParam {
-                keyword: "DRAWING".to_string(),
-                parameter: "\"Modem C100 motherboard 1234-5678\"".to_string(),
+                keyword: "DRAWING",
+                parameter: "\"Modem C100 motherboard 1234-5678\"",
             },
             KeywordParam {
-                keyword: "REVISION".to_string(),
-                parameter: "\"Rev 566g 20th September 1990\"".to_string(),
+                keyword: "REVISION",
+                parameter: "\"Rev 566g 20th September 1990\"",
             },
             KeywordParam {
-                keyword: "UNITS".to_string(),
-                parameter: "USER 1200".to_string(),
+                keyword: "UNITS",
+                parameter: "USER 1200",
             },
             KeywordParam {
-                keyword: "ORIGIN".to_string(),
-                parameter: "0 0".to_string(),
+                keyword: "ORIGIN",
+                parameter: "0 0",
             },
             KeywordParam {
-                keyword: "INTERTRACK".to_string(),
-                parameter: "0".to_string(),
+                keyword: "INTERTRACK",
+                parameter: "0",
             },
             KeywordParam {
-                keyword: "ATTRIBUTE".to_string(),
-                parameter: "alpha m_part \"BIS 9600\"".to_string(),
+                keyword: "ATTRIBUTE",
+                parameter: "alpha m_part \"BIS 9600\"",
             },
             KeywordParam {
-                keyword: "ATTRIBUTE".to_string(),
-                parameter: "alpha m_desc \"Issue 2\"".to_string(),
+                keyword: "ATTRIBUTE",
+                parameter: "alpha m_desc \"Issue 2\"",
             },
         ];
 
@@ -211,32 +204,32 @@ mod tests {
     fn test_missing_required_keywords() {
         let base_params = vec![
             KeywordParam {
-                keyword: "GENCAD".to_string(),
-                parameter: "1.4".to_string(),
+                keyword: "GENCAD",
+                parameter: "1.4",
             },
             KeywordParam {
-                keyword: "USER".to_string(),
-                parameter: "\"Mitron Europe Ltd. Serial Number 00001\"".to_string(),
+                keyword: "USER",
+                parameter: "\"Mitron Europe Ltd. Serial Number 00001\"",
             },
             KeywordParam {
-                keyword: "DRAWING".to_string(),
-                parameter: "\"Modem C100 motherboard 1234-5678\"".to_string(),
+                keyword: "DRAWING",
+                parameter: "\"Modem C100 motherboard 1234-5678\"",
             },
             KeywordParam {
-                keyword: "REVISION".to_string(),
-                parameter: "\"Rev 566g 20th September 1990\"".to_string(),
+                keyword: "REVISION",
+                parameter: "\"Rev 566g 20th September 1990\"",
             },
             KeywordParam {
-                keyword: "UNITS".to_string(),
-                parameter: "USER 1200".to_string(),
+                keyword: "UNITS",
+                parameter: "USER 1200",
             },
             KeywordParam {
-                keyword: "ORIGIN".to_string(),
-                parameter: "0 0".to_string(),
+                keyword: "ORIGIN",
+                parameter: "0 0",
             },
             KeywordParam {
-                keyword: "INTERTRACK".to_string(),
-                parameter: "0".to_string(),
+                keyword: "INTERTRACK",
+                parameter: "0",
             },
         ];
 
@@ -252,7 +245,7 @@ mod tests {
 
         for keyword in missing_keywords {
             let mut params = base_params.clone();
-            params.retain(|p| p.keyword != *keyword);
+            params.retain(|p| p.keyword != keyword);
 
             let result = Header::new(&params);
             assert!(result.is_err());

@@ -160,17 +160,15 @@ impl Board {
         let mut parser_state = BoardParserState::Board;
 
         for param in params {
-            match param.keyword.as_str() {
+            match param.keyword {
                 "THICKNESS" => {
                     if parser_state == BoardParserState::Board && thickness.is_none() {
-                        let (_, value) =
-                            number(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        let (_, value) = number(param.parameter).map_err(|err| err.to_owned())?;
                         thickness = Some(value);
                     }
                 }
                 "LINE" => {
-                    let (_, line) =
-                        line_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, line) = line_ref(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Cutout(ref mut cutout) => {
@@ -189,8 +187,7 @@ impl Board {
                     }
                 }
                 "ARC" => {
-                    let (_, arc) =
-                        arc_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, arc) = arc_ref(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Cutout(ref mut cutout) => {
@@ -209,8 +206,7 @@ impl Board {
                     }
                 }
                 "CIRCLE" => {
-                    let (_, circle) =
-                        circle_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, circle) = circle_ref(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Cutout(ref mut cutout) => {
@@ -230,7 +226,7 @@ impl Board {
                 }
                 "RECTANGLE" => {
                     let (_, rectangle) =
-                        rectangle_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        rectangle_ref(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Cutout(ref mut cutout) => {
@@ -250,7 +246,7 @@ impl Board {
                 }
                 "ATTRIBUTE" => {
                     let (_, attribute) =
-                        attrib_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        attrib_ref(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Cutout(ref mut cutout) => cutout.attributes.push(attribute),
@@ -267,8 +263,7 @@ impl Board {
 
                 // Artwork-only keywords
                 "TRACK" => {
-                    let (_, track) =
-                        track_name(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, track) = track_name(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Artwork(ref mut artwork) => {
@@ -282,8 +277,7 @@ impl Board {
                     }
                 }
                 "FILLED" => {
-                    let (_, filled) =
-                        filled_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, filled) = filled_ref(param.parameter).map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
                             Subsection::Artwork(ref mut artwork) => {
@@ -298,7 +292,7 @@ impl Board {
                 }
                 "TEXT" => {
                     let (_, (origin, text)) = (x_y_ref, preceded(spaces, text_par))
-                        .parse(param.parameter.as_str())
+                        .parse(param.parameter)
                         .map_err(|err| err.to_owned())?;
                     if let BoardParserState::Subsection(mut subsection) = parser_state {
                         match subsection {
@@ -318,8 +312,7 @@ impl Board {
                     if let BoardParserState::Subsection(subsection) = parser_state {
                         subsections.push(subsection);
                     }
-                    let (_, cutout_name) =
-                        string(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, cutout_name) = string(param.parameter).map_err(|err| err.to_owned())?;
                     parser_state = BoardParserState::Subsection(Subsection::Cutout(Cutout::new(
                         cutout_name.as_str(),
                     )))
@@ -329,7 +322,7 @@ impl Board {
                         subsections.push(subsection);
                     }
                     let (_, (mask_name, mask_layer)) = (string, preceded(spaces, layer))
-                        .parse(param.parameter.as_str())
+                        .parse(param.parameter)
                         .map_err(|err| err.to_owned())?;
                     parser_state = BoardParserState::Subsection(Subsection::Mask(Mask::new(
                         mask_name.as_str(),
@@ -341,7 +334,7 @@ impl Board {
                         subsections.push(subsection);
                     }
                     let (_, (mask_name, mask_layer)) = (string, preceded(spaces, layer))
-                        .parse(param.parameter.as_str())
+                        .parse(param.parameter)
                         .map_err(|err| err.to_owned())?;
                     parser_state = BoardParserState::Subsection(Subsection::Artwork(Artwork::new(
                         mask_name.as_str(),
@@ -374,72 +367,72 @@ mod tests {
     fn test_example_board() {
         let params = vec![
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1000 2000 1200 2000".to_string(),
+                keyword: "LINE",
+                parameter: "1000 2000 1200 2000",
             },
             KeywordParam {
-                keyword: "ARC".to_string(),
-                parameter: "1200 2000 1200 3000 1180 2500".to_string(),
+                keyword: "ARC",
+                parameter: "1200 2000 1200 3000 1180 2500",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1200 3000 1000 3000".to_string(),
+                keyword: "LINE",
+                parameter: "1200 3000 1000 3000",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1000 3000 1000 2000".to_string(),
+                keyword: "LINE",
+                parameter: "1000 3000 1000 2000",
             },
             KeywordParam {
-                keyword: "CUTOUT".to_string(),
-                parameter: "TRANSFORMER_HOLE".to_string(),
+                keyword: "CUTOUT",
+                parameter: "TRANSFORMER_HOLE",
             },
             KeywordParam {
-                keyword: "CIRCLE".to_string(),
-                parameter: "1180 2500 20".to_string(),
+                keyword: "CIRCLE",
+                parameter: "1180 2500 20",
             },
             KeywordParam {
-                keyword: "ATTRIBUTE".to_string(),
-                parameter: "board mill \"tool 255\"".to_string(),
+                keyword: "ATTRIBUTE",
+                parameter: "board mill \"tool 255\"",
             },
             KeywordParam {
-                keyword: "MASK".to_string(),
-                parameter: "Fixture_1 TOP".to_string(),
+                keyword: "MASK",
+                parameter: "Fixture_1 TOP",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1005 2005 1195 2005".to_string(),
+                keyword: "LINE",
+                parameter: "1005 2005 1195 2005",
             },
             KeywordParam {
-                keyword: "ARC".to_string(),
-                parameter: "1195 2005 1195 2995 1195 2500".to_string(),
+                keyword: "ARC",
+                parameter: "1195 2005 1195 2995 1195 2500",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1195 2995 1005 2995".to_string(),
+                keyword: "LINE",
+                parameter: "1195 2995 1005 2995",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "1005 2995 1005 2005".to_string(),
+                keyword: "LINE",
+                parameter: "1005 2995 1005 2005",
             },
             KeywordParam {
-                keyword: "ARTWORK".to_string(),
-                parameter: "ORIGIN_MARKER TOP".to_string(),
+                keyword: "ARTWORK",
+                parameter: "ORIGIN_MARKER TOP",
             },
             KeywordParam {
-                keyword: "TRACK".to_string(),
-                parameter: "10".to_string(),
+                keyword: "TRACK",
+                parameter: "10",
             },
             KeywordParam {
-                keyword: "FILLED".to_string(),
-                parameter: "YES".to_string(),
+                keyword: "FILLED",
+                parameter: "YES",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "-100 0 100 0".to_string(),
+                keyword: "LINE",
+                parameter: "-100 0 100 0",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "0 -100 0 100".to_string(),
+                keyword: "LINE",
+                parameter: "0 -100 0 100",
             },
         ];
 

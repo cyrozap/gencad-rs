@@ -72,27 +72,24 @@ pub fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn std::erro
     let mut parser_state = ParserState::Init;
 
     for param in params {
-        match param.keyword.as_str() {
+        match param.keyword {
             "LINE" => {
                 if let ParserState::Pad(mut pad) = parser_state {
-                    let (_, line) =
-                        line_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, line) = line_ref(param.parameter).map_err(|err| err.to_owned())?;
                     pad.shapes.push(PadShape::Line(line));
                     parser_state = ParserState::Pad(pad);
                 }
             }
             "ARC" => {
                 if let ParserState::Pad(mut pad) = parser_state {
-                    let (_, arc) =
-                        arc_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, arc) = arc_ref(param.parameter).map_err(|err| err.to_owned())?;
                     pad.shapes.push(PadShape::Arc(arc));
                     parser_state = ParserState::Pad(pad);
                 }
             }
             "CIRCLE" => {
                 if let ParserState::Pad(mut pad) = parser_state {
-                    let (_, circle) =
-                        circle_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                    let (_, circle) = circle_ref(param.parameter).map_err(|err| err.to_owned())?;
                     pad.shapes.push(PadShape::Circle(circle));
                     parser_state = ParserState::Pad(pad);
                 }
@@ -100,7 +97,7 @@ pub fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn std::erro
             "RECTANGLE" => {
                 if let ParserState::Pad(mut pad) = parser_state {
                     let (_, rectangle) =
-                        rectangle_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        rectangle_ref(param.parameter).map_err(|err| err.to_owned())?;
                     pad.shapes.push(PadShape::Rectangle(rectangle));
                     parser_state = ParserState::Pad(pad);
                 }
@@ -108,7 +105,7 @@ pub fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn std::erro
             "ATTRIBUTE" => {
                 if let ParserState::Pad(mut pad) = parser_state {
                     let (_, attribute) =
-                        attrib_ref(param.parameter.as_str()).map_err(|err| err.to_owned())?;
+                        attrib_ref(param.parameter).map_err(|err| err.to_owned())?;
                     pad.attributes.push(attribute);
                     parser_state = ParserState::Pad(pad);
                 }
@@ -124,7 +121,7 @@ pub fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn std::erro
                     preceded(spaces, pad_type),
                     preceded(spaces, drill_size),
                 )
-                    .parse(param.parameter.as_str())
+                    .parse(param.parameter)
                     .map_err(|err| err.to_owned())?;
                 parser_state = ParserState::Pad(Pad::new(name.as_str(), ptype, drill_size))
             }
@@ -148,68 +145,68 @@ mod tests {
     fn test_example_pads() {
         let params = vec![
             KeywordParam {
-                keyword: "PAD".to_string(),
-                parameter: "p0101 FINGER 32".to_string(),
+                keyword: "PAD",
+                parameter: "p0101 FINGER 32",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "100 50 -100 50".to_string(),
+                keyword: "LINE",
+                parameter: "100 50 -100 50",
             },
             KeywordParam {
-                keyword: "ARC".to_string(),
-                parameter: "-100 50 -100 -50 -100 0".to_string(),
+                keyword: "ARC",
+                parameter: "-100 50 -100 -50 -100 0",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "-100 -50 100 -50".to_string(),
+                keyword: "LINE",
+                parameter: "-100 -50 100 -50",
             },
             KeywordParam {
-                keyword: "ARC".to_string(),
-                parameter: "100 -50 100 50 100 0".to_string(),
+                keyword: "ARC",
+                parameter: "100 -50 100 50 100 0",
             },
             KeywordParam {
-                keyword: "PAD".to_string(),
-                parameter: "p1053 ROUND 20".to_string(),
+                keyword: "PAD",
+                parameter: "p1053 ROUND 20",
             },
             KeywordParam {
-                keyword: "CIRCLE".to_string(),
-                parameter: "0 0 30".to_string(),
+                keyword: "CIRCLE",
+                parameter: "0 0 30",
             },
             KeywordParam {
-                keyword: "PAD".to_string(),
-                parameter: "p2034 BULLET 32".to_string(),
+                keyword: "PAD",
+                parameter: "p2034 BULLET 32",
             },
             KeywordParam {
-                keyword: "ARC".to_string(),
-                parameter: "0 -50 0 50 0 0".to_string(),
+                keyword: "ARC",
+                parameter: "0 -50 0 50 0 0",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "0 50 -100 50".to_string(),
+                keyword: "LINE",
+                parameter: "0 50 -100 50",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "-100 50 -100 -50".to_string(),
+                keyword: "LINE",
+                parameter: "-100 50 -100 -50",
             },
             KeywordParam {
-                keyword: "LINE".to_string(),
-                parameter: "-100 -50 0 -50".to_string(),
+                keyword: "LINE",
+                parameter: "-100 -50 0 -50",
             },
             KeywordParam {
-                keyword: "PAD".to_string(),
-                parameter: "d_hole_50 ROUND 50".to_string(),
+                keyword: "PAD",
+                parameter: "d_hole_50 ROUND 50",
             },
             KeywordParam {
-                keyword: "CIRCLE".to_string(),
-                parameter: "0 0 25".to_string(),
+                keyword: "CIRCLE",
+                parameter: "0 0 25",
             },
             KeywordParam {
-                keyword: "PAD".to_string(),
-                parameter: "3 RECTANGULAR 0".to_string(),
+                keyword: "PAD",
+                parameter: "3 RECTANGULAR 0",
             },
             KeywordParam {
-                keyword: "RECTANGLE".to_string(),
-                parameter: "-5.2 -5.2 10.4 10.4".to_string(),
+                keyword: "RECTANGLE",
+                parameter: "-5.2 -5.2 10.4 10.4",
             },
         ];
 
