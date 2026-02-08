@@ -26,7 +26,7 @@ use crate::types::util::spaces;
 use crate::types::{
     ArcRef, Attribute, CircleRef, Layer, LineRef, Mirror, Number, RectangleRef, XYRef, arc_ref,
     artwork_name, attrib_ref, circle_ref, fid_name, height, layer, line_ref, mirror, pad_name,
-    pin_name, rectangle_ref, rot, string, x_y_ref,
+    pin_name, rectangle_ref, rot, shape_name, string, x_y_ref,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -210,7 +210,7 @@ impl ShapeParser {
         params: &str,
         insert: Option<Insert>,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let (_, name) = string(params).map_err(|err| err.to_owned())?;
+        let (_, name) = shape_name(params).map_err(|err| err.to_owned())?;
 
         let state = ShapeParserState::Shape;
         let name = name.to_string();
