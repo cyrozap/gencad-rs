@@ -53,6 +53,7 @@
 use nom::bytes::complete::{is_a, tag, take_till, take_while, take_while1};
 use nom::combinator::map_res;
 use nom::multi::{many0, many1};
+use nom::sequence::delimited;
 use nom::{AsChar, IResult, Parser};
 
 fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
@@ -71,25 +72,21 @@ fn keyword(input: &[u8]) -> IResult<&[u8], &[u8]> {
 }
 
 fn section_start(input: &[u8]) -> IResult<&[u8], &str> {
-    let (remaining, output) = (
+    delimited(
         tag(b"$".as_slice()),
         map_res(keyword, str::from_utf8),
         take_newlines,
     )
-        .parse(input)?;
-    let keyword = output.1;
-    Ok((remaining, keyword))
+    .parse(input)
 }
 
 fn section_end(input: &[u8]) -> IResult<&[u8], &str> {
-    let (remaining, output) = (
+    delimited(
         tag(b"$END".as_slice()),
         map_res(keyword, str::from_utf8),
         take_newlines,
     )
-        .parse(input)?;
-    let keyword = output.1;
-    Ok((remaining, keyword))
+    .parse(input)
 }
 
 /// A keyword/parameter pair.
@@ -103,15 +100,15 @@ pub struct KeywordParam {
 
 impl KeywordParam {
     fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-        let (remaining, output) = (
+        let (remaining, (keyword, _, parameter, _)) = (
             map_res(keyword, str::from_utf8),
             tag(b" ".as_slice()),
             map_res(take_till(|c| c == b'\r' || c == b'\n'), str::from_utf8),
             take_newlines,
         )
             .parse(input)?;
-        let keyword = output.0.to_string();
-        let parameter = output.2.to_string();
+        let keyword = keyword.to_string();
+        let parameter = parameter.to_string();
         let kp = Self { keyword, parameter };
         Ok((remaining, kp))
     }
@@ -128,10 +125,10 @@ pub struct Section {
 
 impl Section {
     fn parse(input: &[u8]) -> IResult<&[u8], Self> {
-        let (remaining, output) =
+        let (remaining, (start_tag, parameters, end_tag)) =
             (section_start, many0(KeywordParam::parse), section_end).parse(input)?;
-        let name = output.0.to_string();
-        let parameters = output.1;
+        let name = start_tag.to_string();
+        debug_assert_eq!(start_tag, end_tag);
 
         // TODO: Match section end name with section start name?
 
