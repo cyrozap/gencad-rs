@@ -51,7 +51,7 @@
  */
 
 use nom::bytes::complete::{is_a, tag, take_till, take_while, take_while1};
-use nom::combinator::map_res;
+use nom::combinator::{fail, map_res};
 use nom::multi::{many0, many1};
 use nom::sequence::delimited;
 use nom::{AsChar, IResult, Parser};
@@ -127,10 +127,12 @@ impl Section {
     fn parse(input: &[u8]) -> IResult<&[u8], Self> {
         let (remaining, (start_tag, parameters, end_tag)) =
             (section_start, many0(KeywordParam::parse), section_end).parse(input)?;
-        let name = start_tag.to_string();
-        debug_assert_eq!(start_tag, end_tag);
 
-        // TODO: Match section end name with section start name?
+        if start_tag != end_tag {
+            return fail().parse(input);
+        }
+
+        let name = start_tag.to_string();
 
         Ok((remaining, Self { name, parameters }))
     }
