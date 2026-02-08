@@ -140,7 +140,7 @@ impl Section {
 }
 
 /// A fully parsed GenCAD file.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParsedGencadFile {
     /// The parsed sections of the file.
     pub sections: Vec<Section>,
