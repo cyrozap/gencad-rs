@@ -20,6 +20,8 @@
 
 use super::{Number, XYRef};
 
+use crate::serialization::ToGencadString;
+
 /// Specifications for a circle.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CircleRef {
@@ -27,4 +29,26 @@ pub struct CircleRef {
     pub center: XYRef,
     /// The radius of the circle in [super::Dimension] units.
     pub radius: Number,
+}
+
+impl ToGencadString for CircleRef {
+    fn to_gencad_string(&self) -> String {
+        format!("{} {}", self.center.to_gencad_string(), self.radius)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::parser::types::circle_ref;
+
+    #[test]
+    fn test_serialization() {
+        let circle = "1000 -200 10";
+        assert_eq!(
+            circle.to_string(),
+            circle_ref(circle).unwrap().1.to_gencad_string()
+        );
+    }
 }

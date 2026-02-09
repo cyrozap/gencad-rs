@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use crate::serialization::ToGencadString;
+
 /// Layer information.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Layer {
@@ -51,4 +53,26 @@ pub enum Layer {
     LayerX(u16),
     /// Sets of layers.
     LayersetX(u16),
+}
+
+impl ToGencadString for Layer {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Top => "TOP".to_string(),
+            Self::Bottom => "BOTTOM".to_string(),
+            Self::SoldermaskTop => "SOLDERMASK_TOP".to_string(),
+            Self::SoldermaskBottom => "SOLDERMASK_BOTTOM".to_string(),
+            Self::SilkscreenTop => "SILKSCREEN_TOP".to_string(),
+            Self::SilkscreenBottom => "SILKSCREEN_BOTTOM".to_string(),
+            Self::SolderpasteTop => "SOLDERPASTE_TOP".to_string(),
+            Self::SolderpasteBottom => "SOLDERPASTE_BOTTOM".to_string(),
+            Self::PowerX(n) => format!("POWER{}", n),
+            Self::GroundX(n) => format!("GROUND{}", n),
+            Self::Inner => "INNER".to_string(),
+            Self::InnerX(n) => format!("INNER{}", n),
+            Self::All => "ALL".to_string(),
+            Self::LayerX(n) => format!("LAYER{}", n),
+            Self::LayersetX(n) => format!("LAYERSET{}", n),
+        }
+    }
 }

@@ -20,6 +20,8 @@
 
 use super::Number;
 
+use crate::serialization::ToGencadString;
+
 /// A pair of numbers defining the x and y coordinates of a point on or off board.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct XYRef {
@@ -27,4 +29,10 @@ pub struct XYRef {
     pub x: Number,
     /// The y-coordinate in [super::Dimension] units.
     pub y: Number,
+}
+
+impl ToGencadString for XYRef {
+    fn to_gencad_string(&self) -> String {
+        format!("{} {}", self.x, self.y)
+    }
 }

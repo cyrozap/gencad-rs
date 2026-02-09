@@ -20,6 +20,8 @@
 
 use super::XYRef;
 
+use crate::serialization::ToGencadString;
+
 /// Specifications for a line.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LineRef {
@@ -27,4 +29,30 @@ pub struct LineRef {
     pub start: XYRef,
     /// The end of the line.
     pub end: XYRef,
+}
+
+impl ToGencadString for LineRef {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "{} {}",
+            self.start.to_gencad_string(),
+            self.end.to_gencad_string(),
+        )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::parser::types::line_ref;
+
+    #[test]
+    fn test_serialization() {
+        let line = "1000 -200 200 -1000";
+        assert_eq!(
+            line.to_string(),
+            line_ref(line).unwrap().1.to_gencad_string()
+        );
+    }
 }

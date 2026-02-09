@@ -30,6 +30,7 @@ use gencad::parser::sections::shapes::{self, Pin, Shape, ShapeElement, SubShape}
 use gencad::parser::sections::signals::{NailLoc, Node, Signal, Signals};
 use gencad::parser::sections::unknown::{Statement, Unknown};
 use gencad::parser::{ParsedGencadFile, ParsedSection};
+use gencad::serialization::ToGencadString;
 use gencad::types::{
     ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
     RectangleRef, TextPar, XYRef,
@@ -655,4 +656,15 @@ fn test_example() {
             ]
         }
     );
+}
+
+#[test]
+fn test_serialization() {
+    let parsed = ParsedGencadFile::new(EXAMPLE.as_slice()).unwrap();
+
+    let serialized = parsed.to_gencad_string();
+
+    let reparsed = ParsedGencadFile::new(serialized.as_bytes()).unwrap();
+
+    assert_eq!(parsed, reparsed);
 }

@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use crate::serialization::ToGencadString;
+
 /// Pad types.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PadType {
@@ -39,4 +41,20 @@ pub enum PadType {
     Polygon,
     /// Unknown shape; not defined with LINES and ARCS.
     Unknown,
+}
+
+impl ToGencadString for PadType {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Finger => "FINGER".to_string(),
+            Self::Round => "ROUND".to_string(),
+            Self::Annular => "ANNULAR".to_string(),
+            Self::Bullet => "BULLET".to_string(),
+            Self::Rectangular => "RECTANGULAR".to_string(),
+            Self::Hexagon => "HEXAGON".to_string(),
+            Self::Octagon => "OCTAGON".to_string(),
+            Self::Polygon => "POLYGON".to_string(),
+            Self::Unknown => "UNKNOWN".to_string(),
+        }
+    }
 }

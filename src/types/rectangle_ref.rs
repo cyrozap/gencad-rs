@@ -20,6 +20,8 @@
 
 use super::{Number, XYRef};
 
+use crate::serialization::ToGencadString;
+
 /// Specifications for a rectangle.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RectangleRef {
@@ -29,4 +31,26 @@ pub struct RectangleRef {
     pub x: Number,
     /// The y-dimension of the rectangle in [super::Dimension] units.
     pub y: Number,
+}
+
+impl ToGencadString for RectangleRef {
+    fn to_gencad_string(&self) -> String {
+        format!("{} {} {}", self.origin.to_gencad_string(), self.x, self.y)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::parser::types::rectangle_ref;
+
+    #[test]
+    fn test_serialization() {
+        let rectangle = "1000 -200 20 -10";
+        assert_eq!(
+            rectangle.to_string(),
+            rectangle_ref(rectangle).unwrap().1.to_gencad_string()
+        );
+    }
 }

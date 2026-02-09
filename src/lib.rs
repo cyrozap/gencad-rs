@@ -59,4 +59,5 @@
 
 pub mod interpreter;
 pub mod parser;
+pub mod serialization;
 pub mod types;

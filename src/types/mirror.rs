@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use crate::serialization::ToGencadString;
+
 /// Part mirror status.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Mirror {
@@ -27,4 +29,14 @@ pub enum Mirror {
     MirrorX,
     /// Mirrored about the y-axis.
     MirrorY,
+}
+
+impl ToGencadString for Mirror {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Not => "0".to_string(),
+            Self::MirrorX => "MIRRORX".to_string(),
+            Self::MirrorY => "MIRRORY".to_string(),
+        }
+    }
 }

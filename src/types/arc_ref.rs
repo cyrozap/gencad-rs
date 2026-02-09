@@ -20,6 +20,8 @@
 
 use super::{Number, XYRef};
 
+use crate::serialization::ToGencadString;
+
 /// Specifications for a circular arc.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CircularArcRef {
@@ -51,4 +53,47 @@ pub struct EllipticalArcRef {
 pub enum ArcRef {
     Circular(CircularArcRef),
     Elliptical(EllipticalArcRef),
+}
+
+impl ToGencadString for ArcRef {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Circular(arc) => format!(
+                "{} {} {}",
+                arc.start.to_gencad_string(),
+                arc.end.to_gencad_string(),
+                arc.center.to_gencad_string()
+            ),
+            Self::Elliptical(arc) => format!(
+                "{} {} {} {} {}",
+                arc.start.to_gencad_string(),
+                arc.end.to_gencad_string(),
+                arc.center.to_gencad_string(),
+                arc.major_radius,
+                arc.minor_radius
+            ),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::parser::types::arc_ref;
+
+    #[test]
+    fn test_serialization() {
+        let circular = "1000 -200 1000 200 1000 0";
+        assert_eq!(
+            circular.to_string(),
+            arc_ref(circular).unwrap().1.to_gencad_string()
+        );
+
+        let elliptical = "1000 -200 1000 200 1000 0 1000 200";
+        assert_eq!(
+            elliptical.to_string(),
+            arc_ref(elliptical).unwrap().1.to_gencad_string()
+        );
+    }
 }
