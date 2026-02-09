@@ -27,7 +27,9 @@ use crate::parser::types::{
     artwork_name, attrib_ref, component_name, fid_name, flip, layer, mirror, pad_name, part_name,
     rot, shape_name, string, text_par, x_y_ref,
 };
+use crate::serialization::ToGencadString;
 use crate::types::{Attribute, Layer, Mirror, Number, TextPar, XYRef};
+use crate::{impl_to_gencad_string_for_section, impl_to_gencad_string_for_vec};
 
 /// A shape definition used by a component to describe its geometry and orientation.
 #[derive(Debug, Clone, PartialEq)]
@@ -48,6 +50,17 @@ impl Shape {
                 .map_err(|err| err.to_owned())?;
 
         Ok(Self { name, mirror, flip })
+    }
+}
+
+impl ToGencadString for Shape {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "SHAPE {} {} {}",
+            self.name.to_gencad_string(),
+            self.mirror.to_gencad_string(),
+            if self.flip { "FLIP" } else { "0" }
+        )
     }
 }
 
@@ -90,6 +103,22 @@ impl Artwork {
             flip,
             attributes,
         })
+    }
+}
+
+impl ToGencadString for Artwork {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "ARTWORK {} {} {} {} {}",
+            self.name.to_gencad_string(),
+            self.xy.to_gencad_string(),
+            self.rotation,
+            self.mirror.to_gencad_string(),
+            if self.flip { "FLIP" } else { "0" }
+        ));
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
     }
 }
 
@@ -143,6 +172,24 @@ impl Fid {
     }
 }
 
+impl ToGencadString for Fid {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "FID {} {} {} {} {} {} {}",
+            self.name.to_gencad_string(),
+            self.pad_name.to_gencad_string(),
+            self.xy.to_gencad_string(),
+            self.layer.to_gencad_string(),
+            self.rotation,
+            self.mirror.to_gencad_string(),
+            if self.flip { "FLIP" } else { "0" }
+        ));
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
 /// A text string associated with a component, such as its name or label.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Text {
@@ -162,11 +209,34 @@ impl Text {
     }
 }
 
+impl ToGencadString for Text {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "TEXT {} {}",
+            self.origin.to_gencad_string(),
+            self.text.to_gencad_string()
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(Text);
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum SubComponent {
     Artwork(Artwork),
     Fid(Fid),
 }
+
+impl ToGencadString for SubComponent {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Artwork(a) => a.to_gencad_string(),
+            Self::Fid(f) => f.to_gencad_string(),
+        }
+    }
+}
+
+impl_to_gencad_string_for_vec!(SubComponent);
 
 #[derive(Debug, Clone, PartialEq)]
 enum ComponentParserState {
@@ -198,6 +268,27 @@ pub struct Component {
     /// Miscellaneous information that is relevant to this component.
     pub attributes: Vec<Attribute>,
 }
+
+impl ToGencadString for Component {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!("COMPONENT {}", self.name.to_gencad_string()));
+        lines.push(format!("DEVICE {}", self.device.to_gencad_string()));
+        lines.push(format!("PLACE {}", self.place.to_gencad_string()));
+        lines.push(format!("LAYER {}", self.layer.to_gencad_string()));
+        lines.push(format!("ROTATION {}", self.rotation));
+        lines.push(self.shape.to_gencad_string());
+        lines.push(self.subcomponents.to_gencad_string());
+        lines.push(self.texts.to_gencad_string());
+        if let Some(sheet) = &self.sheet {
+            lines.push(format!("SHEET {}", sheet.to_gencad_string()));
+        }
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
+impl_to_gencad_string_for_section!(Component, "$COMPONENTS", "$ENDCOMPONENTS");
 
 /// A prototype for a component being parsed, used to build a fully constructed `Component`.
 #[derive(Debug, Clone, PartialEq)]

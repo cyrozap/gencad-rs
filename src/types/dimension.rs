@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use crate::serialization::ToGencadString;
+
 /// The dimension of the units used in the GenCAD file.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Dimension {
@@ -35,4 +37,18 @@ pub enum Dimension {
     UserM(u16),
     /// Number of units per millimeter.
     UserMm(u16),
+}
+
+impl ToGencadString for Dimension {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Inch => "INCH".to_string(),
+            Self::Thou => "THOU".to_string(),
+            Self::Mm => "MM".to_string(),
+            Self::Mm100 => "MM100".to_string(),
+            Self::User(units) => format!("USER {}", units),
+            Self::UserM(units) => format!("USERM {}", units),
+            Self::UserMm(units) => format!("USERMM {}", units),
+        }
+    }
 }

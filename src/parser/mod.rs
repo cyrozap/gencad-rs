@@ -51,7 +51,7 @@
  */
 
 pub mod sections;
-mod types;
+pub(crate) mod types;
 
 use nom::bytes::complete::{is_a, tag, take_till, take_while, take_while1};
 use nom::combinator::{fail, map_res};
@@ -68,6 +68,8 @@ use sections::padstacks::Padstacks;
 use sections::shapes::{Shape, parse_shapes};
 use sections::signals::Signals;
 use sections::unknown::Unknown;
+
+use crate::serialization::ToGencadString;
 
 fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
     // Need to consume CR until first LF, then consume all following CRs and LFs
@@ -167,6 +169,22 @@ pub enum ParsedSection {
     Unknown(Unknown),
 }
 
+impl ToGencadString for ParsedSection {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Header(h) => h.to_gencad_string(),
+            Self::Board(b) => b.to_gencad_string(),
+            Self::Pads(p) => p.to_gencad_string(),
+            Self::Padstacks(p) => p.to_gencad_string(),
+            Self::Shapes(s) => s.to_gencad_string(),
+            Self::Components(c) => c.to_gencad_string(),
+            Self::Devices(d) => d.to_gencad_string(),
+            Self::Signals(s) => s.to_gencad_string(),
+            Self::Unknown(u) => u.to_gencad_string(),
+        }
+    }
+}
+
 /// A fully parsed GenCAD file.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParsedGencadFile {
@@ -224,5 +242,16 @@ impl ParsedGencadFile {
         }
 
         Ok(Self { sections })
+    }
+}
+
+impl ToGencadString for ParsedGencadFile {
+    fn to_gencad_string(&self) -> String {
+        self.sections
+            .iter()
+            .map(|section| section.to_gencad_string())
+            .collect::<Vec<_>>()
+            .join("\r\n\r\n")
+            + "\r\n"
     }
 }

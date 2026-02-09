@@ -20,6 +20,8 @@
 
 use super::{Layer, Mirror, Number, RectangleRef};
 
+use crate::serialization::ToGencadString;
+
 /// Specifications for a text object.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TextPar {
@@ -35,4 +37,18 @@ pub struct TextPar {
     pub text: String,
     /// The rectangular area the text must fit within.
     pub area: RectangleRef,
+}
+
+impl ToGencadString for TextPar {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "{} {} {} {} {} {}",
+            self.text_size,
+            self.rotation,
+            self.mirror.to_gencad_string(),
+            self.layer.to_gencad_string(),
+            self.text.to_gencad_string(),
+            self.area.to_gencad_string(),
+        )
+    }
 }

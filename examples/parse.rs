@@ -24,6 +24,7 @@ use std::io::BufReader;
 use clap::Parser;
 
 use gencad::parser::ParsedGencadFile;
+use gencad::serialization::ToGencadString;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -52,7 +53,5 @@ fn main() {
         }
     };
 
-    for section in parsed.sections {
-        println!("{:?}", section);
-    }
+    print!("{}", parsed.to_gencad_string());
 }
