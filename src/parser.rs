@@ -61,6 +61,7 @@ use crate::sections::components::{Component, parse_components};
 use crate::sections::devices::{Device, parse_devices};
 use crate::sections::header::Header;
 use crate::sections::pads::{Pad, parse_pads};
+use crate::sections::padstacks::Padstacks;
 use crate::sections::shapes::{Shape, parse_shapes};
 use crate::sections::signals::Signals;
 
@@ -154,6 +155,7 @@ pub enum ParsedSection {
     Header(Header),
     Board(Board),
     Pads(Vec<Pad>),
+    Padstacks(Padstacks),
     Shapes(Vec<Shape>),
     Components(Vec<Component>),
     Devices(Vec<Device>),
@@ -190,6 +192,9 @@ impl ParsedGencadFile {
                 "HEADER" => sections.push(ParsedSection::Header(Header::new(&section.parameters)?)),
                 "BOARD" => sections.push(ParsedSection::Board(Board::new(&section.parameters)?)),
                 "PADS" => sections.push(ParsedSection::Pads(parse_pads(&section.parameters)?)),
+                "PADSTACKS" => sections.push(ParsedSection::Padstacks(Padstacks::new(
+                    &section.parameters,
+                )?)),
                 "SHAPES" => {
                     sections.push(ParsedSection::Shapes(parse_shapes(&section.parameters)?))
                 }
