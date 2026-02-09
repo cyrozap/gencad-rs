@@ -58,6 +58,7 @@ use nom::{AsChar, IResult, Parser};
 
 use crate::sections::board::Board;
 use crate::sections::components::{Component, parse_components};
+use crate::sections::devices::{Device, parse_devices};
 use crate::sections::header::Header;
 use crate::sections::pads::{Pad, parse_pads};
 use crate::sections::shapes::{Shape, parse_shapes};
@@ -154,6 +155,7 @@ pub enum ParsedSection {
     Pads(Vec<Pad>),
     Shapes(Vec<Shape>),
     Components(Vec<Component>),
+    Devices(Vec<Device>),
 }
 
 /// A fully parsed GenCAD file.
@@ -192,6 +194,9 @@ impl ParsedGencadFile {
                 "COMPONENTS" => sections.push(ParsedSection::Components(parse_components(
                     &section.parameters,
                 )?)),
+                "DEVICES" => {
+                    sections.push(ParsedSection::Devices(parse_devices(&section.parameters)?))
+                }
                 _ => (),
             }
         }
