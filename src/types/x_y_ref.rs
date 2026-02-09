@@ -22,6 +22,7 @@ use nom::combinator::map;
 use nom::sequence::separated_pair;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{Number, number};
 
@@ -38,6 +39,12 @@ impl XYRef {
     fn new(p: (Number, Number)) -> Self {
         let (x, y) = p;
         Self { x, y }
+    }
+}
+
+impl ToGencadString for XYRef {
+    fn to_gencad_string(&self) -> String {
+        format!("{} {}", self.x, self.y)
     }
 }
 

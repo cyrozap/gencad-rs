@@ -22,10 +22,12 @@ use nom::Parser;
 use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::{
     ArcRef, Attribute, CircleRef, LineRef, Number, PadType, RectangleRef, arc_ref, attrib_ref,
     circle_ref, drill_size, line_ref, pad_name, pad_type, rectangle_ref, util::spaces,
 };
+use crate::{impl_to_gencad_string_for_section, impl_to_gencad_string_for_vec};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PadShape {
@@ -34,6 +36,19 @@ pub enum PadShape {
     Circle(CircleRef),
     Rectangle(RectangleRef),
 }
+
+impl ToGencadString for PadShape {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Line(line) => format!("LINE {}", line.to_gencad_string()),
+            Self::Arc(arc) => format!("ARC {}", arc.to_gencad_string()),
+            Self::Circle(circle) => format!("CIRCLE {}", circle.to_gencad_string()),
+            Self::Rectangle(rect) => format!("RECTANGLE {}", rect.to_gencad_string()),
+        }
+    }
+}
+
+impl_to_gencad_string_for_vec!(PadShape);
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Pad {
@@ -58,6 +73,30 @@ impl Pad {
         }
     }
 }
+
+impl ToGencadString for Pad {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+
+        // Start with the PAD line
+        lines.push(format!(
+            "PAD {} {} {}",
+            self.name.to_gencad_string(),
+            self.ptype.to_gencad_string(),
+            self.drill_size
+        ));
+
+        // Add each shape
+        lines.push(self.shapes.to_gencad_string());
+
+        // Add each attribute
+        lines.push(self.attributes.to_gencad_string());
+
+        lines.join("\r\n")
+    }
+}
+
+impl_to_gencad_string_for_section!(Pad, "$PADS", "$ENDPADS");
 
 #[derive(Debug, Clone, PartialEq)]
 enum ParserState {

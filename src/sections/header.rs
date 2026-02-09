@@ -19,6 +19,7 @@
  */
 
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::{
     Attribute, Dimension, Number, XYRef, attrib_ref, dimension, number, string, x_y_ref,
 };
@@ -126,6 +127,23 @@ impl Header {
             intertrack,
             attributes,
         })
+    }
+}
+
+impl ToGencadString for Header {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push("$HEADER".to_string());
+        lines.push(format!("GENCAD {}", self.gencad_version));
+        lines.push(format!("USER {}", self.user.to_gencad_string()));
+        lines.push(format!("DRAWING {}", self.drawing.to_gencad_string()));
+        lines.push(format!("REVISION {}", self.revision.to_gencad_string()));
+        lines.push(format!("UNITS {}", self.units.to_gencad_string()));
+        lines.push(format!("ORIGIN {}", self.origin.to_gencad_string()));
+        lines.push(format!("INTERTRACK {}", self.intertrack));
+        lines.push(self.attributes.to_gencad_string());
+        lines.push("$ENDHEADER".to_string());
+        lines.join("\r\n")
     }
 }
 

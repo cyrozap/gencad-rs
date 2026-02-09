@@ -21,7 +21,9 @@
 use nom::Parser;
 use nom::sequence::preceded;
 
+use crate::impl_to_gencad_string_for_vec;
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::TextPar;
 use crate::types::{
     ArcRef, Attribute, CircleRef, Layer, LineRef, Number, RectangleRef, XYRef, arc_ref, attrib_ref,
@@ -36,6 +38,19 @@ pub enum BoardShape {
     Circle(CircleRef),
     Rectangle(RectangleRef),
 }
+
+impl ToGencadString for BoardShape {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Line(line) => format!("LINE {}", line.to_gencad_string()),
+            Self::Arc(arc) => format!("ARC {}", arc.to_gencad_string()),
+            Self::Circle(circle) => format!("CIRCLE {}", circle.to_gencad_string()),
+            Self::Rectangle(rect) => format!("RECTANGLE {}", rect.to_gencad_string()),
+        }
+    }
+}
+
+impl_to_gencad_string_for_vec!(BoardShape);
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Cutout {
@@ -54,6 +69,16 @@ impl Cutout {
             shapes,
             attributes,
         }
+    }
+}
+
+impl ToGencadString for Cutout {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!("CUTOUT {}", self.name.to_gencad_string()));
+        lines.push(self.shapes.to_gencad_string());
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
     }
 }
 
@@ -79,6 +104,20 @@ impl Mask {
     }
 }
 
+impl ToGencadString for Mask {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "MASK {} {}",
+            self.name.to_gencad_string(),
+            self.layer.to_gencad_string()
+        ));
+        lines.push(self.shapes.to_gencad_string());
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Text {
     pub origin: XYRef,
@@ -88,6 +127,18 @@ pub struct Text {
 impl Text {
     fn new(origin: XYRef, text: TextPar) -> Self {
         Self { origin, text }
+    }
+}
+
+impl ToGencadString for Text {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "TEXT {} {}",
+            self.origin.to_gencad_string(),
+            self.text.to_gencad_string()
+        ));
+        lines.join("\r\n")
     }
 }
 
@@ -101,6 +152,24 @@ pub enum ArtworkComponent {
     Filled(bool),
     Text(Text),
 }
+
+impl ToGencadString for ArtworkComponent {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Line(line) => format!("LINE {}", line.to_gencad_string()),
+            Self::Arc(arc) => format!("ARC {}", arc.to_gencad_string()),
+            Self::Circle(circle) => format!("CIRCLE {}", circle.to_gencad_string()),
+            Self::Rectangle(rect) => format!("RECTANGLE {}", rect.to_gencad_string()),
+            Self::Track(track) => format!("TRACK {}", track.to_gencad_string()),
+            Self::Filled(filled) => {
+                format!("FILLED {}", if *filled { "YES" } else { "0" }.to_string())
+            }
+            Self::Text(text) => text.to_gencad_string(),
+        }
+    }
+}
+
+impl_to_gencad_string_for_vec!(ArtworkComponent);
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Artwork {
@@ -124,12 +193,38 @@ impl Artwork {
     }
 }
 
+impl ToGencadString for Artwork {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "ARTWORK {} {}",
+            self.name.to_gencad_string(),
+            self.layer.to_gencad_string()
+        ));
+        lines.push(self.components.to_gencad_string());
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Subsection {
     Cutout(Cutout),
     Mask(Mask),
     Artwork(Artwork),
 }
+
+impl ToGencadString for Subsection {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Cutout(s) => s.to_gencad_string(),
+            Self::Mask(s) => s.to_gencad_string(),
+            Self::Artwork(s) => s.to_gencad_string(),
+        }
+    }
+}
+
+impl_to_gencad_string_for_vec!(Subsection);
 
 #[derive(Debug, Clone, PartialEq)]
 enum BoardParserState {
@@ -355,6 +450,21 @@ impl Board {
             attributes,
             subsections,
         })
+    }
+}
+
+impl ToGencadString for Board {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push("$BOARD".to_string());
+        if let Some(thickness) = self.thickness {
+            lines.push(format!("THICKNESS {}", thickness));
+        }
+        lines.push(self.outline_shapes.to_gencad_string());
+        lines.push(self.attributes.to_gencad_string());
+        lines.push(self.subsections.to_gencad_string());
+        lines.push("$ENDBOARD".to_string());
+        lines.join("\r\n")
     }
 }
 

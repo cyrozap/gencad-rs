@@ -22,6 +22,7 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{
     Layer, Mirror, Number, RectangleRef, layer, mirror, number, rectangle_ref, rot, string,
@@ -55,6 +56,20 @@ impl TextPar {
             text,
             area,
         }
+    }
+}
+
+impl ToGencadString for TextPar {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "{} {} {} {} {} {}",
+            self.text_size,
+            self.rotation,
+            self.mirror.to_gencad_string(),
+            self.layer.to_gencad_string(),
+            self.text.to_gencad_string(),
+            self.area.to_gencad_string(),
+        )
     }
 }
 

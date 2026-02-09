@@ -21,7 +21,9 @@
 use nom::Parser;
 use nom::sequence::preceded;
 
+use crate::impl_to_gencad_string_for_vec;
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{
     Attribute, Layer, Mirror, Number, attrib_ref, drill_size, layer, mirror, pad_name, rot,
@@ -55,6 +57,20 @@ impl Pad {
     }
 }
 
+impl ToGencadString for Pad {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "PAD {} {} {} {}",
+            self.name.to_gencad_string(),
+            self.layer.to_gencad_string(),
+            self.rotation,
+            self.mirror.to_gencad_string(),
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(Pad);
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Padstack {
     pub name: String,
@@ -86,6 +102,21 @@ impl Padstack {
         }
     }
 }
+
+impl ToGencadString for Padstack {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "PADSTACK {} {}",
+            self.name.to_gencad_string(),
+            self.drill_size,
+        ));
+        lines.push(self.pads.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
+impl_to_gencad_string_for_vec!(Padstack);
 
 #[derive(Debug, Clone, PartialEq)]
 enum PadstacksParserState {
@@ -170,6 +201,17 @@ impl Padstacks {
             p.ingest(param)?;
         }
         p.finalize()
+    }
+}
+
+impl ToGencadString for Padstacks {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push("$PADSTACKS".to_string());
+        lines.push(self.padstacks.to_gencad_string());
+        lines.push(self.attributes.to_gencad_string());
+        lines.push("$ENDPADSTACKS".to_string());
+        lines.join("\r\n")
     }
 }
 

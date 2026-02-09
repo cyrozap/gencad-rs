@@ -23,6 +23,8 @@ use nom::bytes::complete::tag;
 use nom::combinator::value;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
+
 /// Pad types.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PadType {
@@ -59,6 +61,22 @@ pub fn pad_type(s: &str) -> IResult<&str, PadType> {
         value(PadType::Unknown, tag("UNKNOWN")),
     ))
     .parse(s)
+}
+
+impl ToGencadString for PadType {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Finger => "FINGER".to_string(),
+            Self::Round => "ROUND".to_string(),
+            Self::Annular => "ANNULAR".to_string(),
+            Self::Bullet => "BULLET".to_string(),
+            Self::Rectangular => "RECTANGULAR".to_string(),
+            Self::Hexagon => "HEXAGON".to_string(),
+            Self::Octagon => "OCTAGON".to_string(),
+            Self::Polygon => "POLYGON".to_string(),
+            Self::Unknown => "UNKNOWN".to_string(),
+        }
+    }
 }
 
 #[cfg(test)]

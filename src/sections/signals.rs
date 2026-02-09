@@ -21,7 +21,9 @@
 use nom::Parser;
 use nom::sequence::preceded;
 
+use crate::impl_to_gencad_string_for_vec;
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{
     Attribute, Layer, XYRef, attrib_ref, component_name, layer, pin_name, probe, sig_name, tan,
@@ -46,6 +48,18 @@ impl Node {
         })
     }
 }
+
+impl ToGencadString for Node {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "NODE {} {}",
+            self.component_name.to_gencad_string(),
+            self.pin_name.to_gencad_string(),
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(Node);
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct NailLoc {
@@ -87,6 +101,24 @@ impl NailLoc {
     }
 }
 
+impl ToGencadString for NailLoc {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "NAILLOC {} {} {} {} {} {} {} {}",
+            self.component_name.to_gencad_string(),
+            self.pin_name.to_gencad_string(),
+            self.tp_name.to_gencad_string(),
+            self.xy.to_gencad_string(),
+            self.tan.to_gencad_string(),
+            self.tin.to_gencad_string(),
+            self.probe.to_gencad_string(),
+            self.layer.to_gencad_string()
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(NailLoc);
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Signal {
     pub name: String,
@@ -121,6 +153,18 @@ impl Signal {
         }
     }
 }
+
+impl ToGencadString for Signal {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!("SIGNAL {}", self.name.to_gencad_string()));
+        lines.push(self.nodes.to_gencad_string());
+        lines.push(self.nail_locations.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
+impl_to_gencad_string_for_vec!(Signal);
 
 #[derive(Debug, Clone, PartialEq)]
 enum SignalsParserState {
@@ -205,6 +249,17 @@ impl Signals {
             p.ingest(param)?;
         }
         p.finalize()
+    }
+}
+
+impl ToGencadString for Signals {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push("$SIGNALS".to_string());
+        lines.push(self.signals.to_gencad_string());
+        lines.push(self.attributes.to_gencad_string());
+        lines.push("$ENDSIGNALS".to_string());
+        lines.join("\r\n")
     }
 }
 

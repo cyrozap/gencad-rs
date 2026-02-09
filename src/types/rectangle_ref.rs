@@ -22,6 +22,7 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{Number, XYRef, number, x_y_ref};
 
@@ -40,6 +41,12 @@ impl RectangleRef {
     fn new(v: (XYRef, Number, Number)) -> Self {
         let (origin, x, y) = v;
         Self { origin, x, y }
+    }
+}
+
+impl ToGencadString for RectangleRef {
+    fn to_gencad_string(&self) -> String {
+        format!("{} {} {}", self.origin.to_gencad_string(), self.x, self.y)
     }
 }
 
@@ -70,6 +77,15 @@ mod tests {
                     y: -10.0,
                 }
             ))
+        );
+    }
+
+    #[test]
+    fn test_serialization() {
+        let rectangle = "1000 -200 20 -10";
+        assert_eq!(
+            rectangle.to_string(),
+            rectangle_ref(rectangle).unwrap().1.to_gencad_string()
         );
     }
 }

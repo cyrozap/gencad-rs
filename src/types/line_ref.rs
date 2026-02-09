@@ -22,6 +22,7 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{XYRef, x_y_ref};
 
@@ -38,6 +39,16 @@ impl LineRef {
     fn new(v: (XYRef, XYRef)) -> Self {
         let (start, end) = v;
         Self { start, end }
+    }
+}
+
+impl ToGencadString for LineRef {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "{} {}",
+            self.start.to_gencad_string(),
+            self.end.to_gencad_string(),
+        )
     }
 }
 
@@ -66,6 +77,15 @@ mod tests {
                     },
                 }
             ))
+        );
+    }
+
+    #[test]
+    fn test_serialization() {
+        let line = "1000 -200 200 -1000";
+        assert_eq!(
+            line.to_string(),
+            line_ref(line).unwrap().1.to_gencad_string()
         );
     }
 }

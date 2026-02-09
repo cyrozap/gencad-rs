@@ -22,6 +22,8 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
+use crate::impl_to_gencad_string_for_vec;
+use crate::serialization::ToGencadString;
 use crate::types::string;
 use crate::types::util::spaces;
 
@@ -46,6 +48,19 @@ impl Attribute {
         }
     }
 }
+
+impl ToGencadString for Attribute {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "ATTRIBUTE {} {} {}",
+            self.category.to_gencad_string(),
+            self.name.to_gencad_string(),
+            self.data.to_gencad_string()
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(Attribute);
 
 pub fn attrib_ref(s: &str) -> IResult<&str, Attribute> {
     map(
@@ -95,6 +110,15 @@ mod tests {
                     data: "Issue 2".to_string()
                 }
             ))
+        );
+    }
+
+    #[test]
+    fn test_serialization() {
+        let attr = r#"alpha m_part "BIS 9600""#;
+        assert_eq!(
+            format!("ATTRIBUTE {}", attr),
+            attrib_ref(attr).unwrap().1.to_gencad_string()
         );
     }
 }

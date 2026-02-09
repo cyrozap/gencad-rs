@@ -23,6 +23,8 @@ use nom::bytes::complete::tag;
 use nom::combinator::value;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
+
 /// Part mirror status.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Mirror {
@@ -41,6 +43,16 @@ pub fn mirror(s: &str) -> IResult<&str, Mirror> {
         value(Mirror::MirrorY, tag("MIRRORY")),
     ))
     .parse(s)
+}
+
+impl ToGencadString for Mirror {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Not => "0".to_string(),
+            Self::MirrorX => "MIRRORX".to_string(),
+            Self::MirrorY => "MIRRORY".to_string(),
+        }
+    }
 }
 
 #[cfg(test)]

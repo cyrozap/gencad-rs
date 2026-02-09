@@ -658,3 +658,14 @@ fn test_example() {
         }
     );
 }
+
+#[test]
+fn test_serialization() {
+    let parsed = ParsedGencadFile::new(EXAMPLE.as_slice()).unwrap();
+
+    let serialized = parsed.to_gencad_string();
+
+    let reparsed = ParsedGencadFile::new(serialized.as_bytes()).unwrap();
+
+    assert_eq!(parsed, reparsed);
+}

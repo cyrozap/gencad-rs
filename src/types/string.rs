@@ -26,6 +26,19 @@ use nom::multi::many0;
 use nom::sequence::{delimited, preceded};
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
+
+impl ToGencadString for String {
+    fn to_gencad_string(&self) -> String {
+        // If string contains a quote mark or a space, or if it's empty, it must be quoted.
+        if self.is_empty() || self.contains('\"') || self.contains(' ') {
+            format!("\"{}\"", self.replace('\"', r#"\""#))
+        } else {
+            self.clone()
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum QuotedStringFragment<'a> {
     Literal(&'a str),

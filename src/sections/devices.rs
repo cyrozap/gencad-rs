@@ -22,8 +22,10 @@ use nom::Parser;
 use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{Attribute, attrib_ref, p_integer, part_name, pin_name, string};
+use crate::{impl_to_gencad_string_for_section, impl_to_gencad_string_for_vec};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PinDesc {
@@ -41,6 +43,18 @@ impl PinDesc {
     }
 }
 
+impl ToGencadString for PinDesc {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "PINDESC {} {}",
+            self.pin_name.to_gencad_string(),
+            self.text.to_gencad_string(),
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(PinDesc);
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct PinFunct {
     pub pin_name: String,
@@ -56,6 +70,18 @@ impl PinFunct {
         Ok(Self { pin_name, text })
     }
 }
+
+impl ToGencadString for PinFunct {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "PINFUNCT {} {}",
+            self.pin_name.to_gencad_string(),
+            self.text.to_gencad_string(),
+        )
+    }
+}
+
+impl_to_gencad_string_for_vec!(PinFunct);
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Device {
@@ -75,6 +101,52 @@ pub struct Device {
     pub desc: Option<String>,
     pub attributes: Vec<Attribute>,
 }
+
+impl ToGencadString for Device {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!("DEVICE {}", self.name.to_gencad_string()));
+        if let Some(part) = &self.part {
+            lines.push(format!("PART {}", part.to_gencad_string()));
+        }
+        if let Some(dtype) = &self.dtype {
+            lines.push(format!("TYPE {}", dtype.to_gencad_string()));
+        }
+        if let Some(style) = &self.style {
+            lines.push(format!("STYLE {}", style.to_gencad_string()));
+        }
+        if let Some(package) = &self.package {
+            lines.push(format!("PACKAGE {}", package.to_gencad_string()));
+        }
+        lines.push(self.pin_descriptions.to_gencad_string());
+        lines.push(self.pin_functions.to_gencad_string());
+        if let Some(pincount) = self.pincount {
+            lines.push(format!("PINCOUNT {}", pincount));
+        }
+        if let Some(value) = &self.value {
+            lines.push(format!("VALUE {}", value.to_gencad_string()));
+        }
+        if let Some(tol) = &self.tol {
+            lines.push(format!("TOL {}", tol.to_gencad_string()));
+        }
+        if let Some(ntol) = &self.ntol {
+            lines.push(format!("NTOL {}", ntol.to_gencad_string()));
+        }
+        if let Some(ptol) = &self.ptol {
+            lines.push(format!("PTOL {}", ptol.to_gencad_string()));
+        }
+        if let Some(volts) = &self.volts {
+            lines.push(format!("VOLTS {}", volts.to_gencad_string()));
+        }
+        if let Some(desc) = &self.desc {
+            lines.push(format!("DESC {}", desc.to_gencad_string()));
+        }
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
+impl_to_gencad_string_for_section!(Device, "$DEVICES", "$ENDDEVICES");
 
 impl Device {
     fn from_parameters(params: &str) -> Result<Self, Box<dyn std::error::Error>> {

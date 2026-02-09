@@ -21,7 +21,9 @@
 use nom::Parser;
 use nom::sequence::preceded;
 
+use crate::impl_to_gencad_string_for_section;
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{
     ArcRef, Attribute, CircleRef, Layer, LineRef, Mirror, Number, RectangleRef, XYRef, arc_ref,
@@ -36,6 +38,18 @@ pub enum ShapeElement {
     Circle(CircleRef),
     Rectangle(RectangleRef),
     Fiducial(XYRef),
+}
+
+impl ToGencadString for ShapeElement {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Line(line) => format!("LINE {}", line.to_gencad_string()),
+            Self::Arc(arc) => format!("ARC {}", arc.to_gencad_string()),
+            Self::Circle(circle) => format!("CIRCLE {}", circle.to_gencad_string()),
+            Self::Rectangle(rect) => format!("RECTANGLE {}", rect.to_gencad_string()),
+            Self::Fiducial(xy) => format!("FIDUCIAL {}", xy.to_gencad_string()),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -68,6 +82,25 @@ impl Insert {
     }
 }
 
+impl ToGencadString for Insert {
+    fn to_gencad_string(&self) -> String {
+        format!(
+            "INSERT {}",
+            match self {
+                Self::Th => "TH",
+                Self::Axial => "AXIAL",
+                Self::Radial => "RADIAL",
+                Self::Dip => "DIP",
+                Self::Sip => "SIP",
+                Self::Zip => "ZIP",
+                Self::Conn => "CONN",
+                Self::Smd => "SMD",
+                Self::Other => "OTHER",
+            }
+        )
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Artwork {
     pub name: String,
@@ -97,6 +130,21 @@ impl Artwork {
             mirror,
             attributes,
         })
+    }
+}
+
+impl ToGencadString for Artwork {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "ARTWORK {} {} {} {}",
+            self.name.to_gencad_string(),
+            self.xy.to_gencad_string(),
+            self.rotation,
+            self.mirror.to_gencad_string()
+        ));
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
     }
 }
 
@@ -138,6 +186,23 @@ impl Fid {
     }
 }
 
+impl ToGencadString for Fid {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "FID {} {} {} {} {} {}",
+            self.name.to_gencad_string(),
+            self.pad_name.to_gencad_string(),
+            self.xy.to_gencad_string(),
+            self.layer.to_gencad_string(),
+            self.rotation,
+            self.mirror.to_gencad_string()
+        ));
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Pin {
     pub name: String,
@@ -176,11 +241,38 @@ impl Pin {
     }
 }
 
+impl ToGencadString for Pin {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!(
+            "PIN {} {} {} {} {} {}",
+            self.name.to_gencad_string(),
+            self.pad_name.to_gencad_string(),
+            self.xy.to_gencad_string(),
+            self.layer.to_gencad_string(),
+            self.rotation,
+            self.mirror.to_gencad_string()
+        ));
+        lines.push(self.attributes.to_gencad_string());
+        lines.join("\r\n")
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum SubShape {
     Artwork(Artwork),
     Fid(Fid),
     Pin(Pin),
+}
+
+impl ToGencadString for SubShape {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Artwork(artwork) => artwork.to_gencad_string(),
+            Self::Fid(fid) => fid.to_gencad_string(),
+            Self::Pin(pin) => pin.to_gencad_string(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -198,6 +290,48 @@ pub struct Shape {
     pub subshapes: Vec<SubShape>,
     pub attributes: Vec<Attribute>,
 }
+
+impl ToGencadString for Shape {
+    fn to_gencad_string(&self) -> String {
+        let mut lines = Vec::new();
+
+        // Start with the SHAPE line
+        lines.push(format!("SHAPE {}", self.name.to_gencad_string()));
+
+        // Add elements
+        lines.extend(
+            self.elements
+                .iter()
+                .map(|e| e.to_gencad_string())
+                .collect::<Vec<_>>(),
+        );
+
+        // Add optional INSERT
+        if let Some(insert) = &self.insert {
+            lines.push(insert.to_gencad_string());
+        }
+
+        // Add optional HEIGHT
+        if let Some(height) = &self.height {
+            lines.push(format!("HEIGHT {}", height));
+        }
+
+        // Add subshapes
+        lines.extend(
+            self.subshapes
+                .iter()
+                .map(|shape| shape.to_gencad_string())
+                .collect::<Vec<_>>(),
+        );
+
+        // Add attributes
+        lines.push(self.attributes.to_gencad_string());
+
+        lines.join("\r\n")
+    }
+}
+
+impl_to_gencad_string_for_section!(Shape, "$SHAPES", "$ENDSHAPES");
 
 #[derive(Debug, Clone, PartialEq)]
 struct ShapeParser {

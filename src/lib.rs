@@ -55,4 +55,5 @@
 
 pub mod parser;
 pub mod sections;
+pub mod serialization;
 pub(crate) mod types;

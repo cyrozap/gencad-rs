@@ -23,6 +23,7 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{Number, XYRef, number, x_y_ref};
 
@@ -77,6 +78,27 @@ impl ArcRef {
     }
 }
 
+impl ToGencadString for ArcRef {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Circular(arc) => format!(
+                "{} {} {}",
+                arc.start.to_gencad_string(),
+                arc.end.to_gencad_string(),
+                arc.center.to_gencad_string()
+            ),
+            Self::Elliptical(arc) => format!(
+                "{} {} {} {} {}",
+                arc.start.to_gencad_string(),
+                arc.end.to_gencad_string(),
+                arc.center.to_gencad_string(),
+                arc.major_radius,
+                arc.minor_radius
+            ),
+        }
+    }
+}
+
 pub fn arc_ref(s: &str) -> IResult<&str, ArcRef> {
     alt((
         map(
@@ -125,6 +147,7 @@ mod tests {
             ))
         );
     }
+
     #[test]
     fn test_elliptical() {
         assert_eq!(
@@ -145,6 +168,21 @@ mod tests {
                     minor_radius: 200.0,
                 })
             ))
+        );
+    }
+
+    #[test]
+    fn test_serialization() {
+        let circular = "1000 -200 1000 200 1000 0";
+        assert_eq!(
+            circular.to_string(),
+            arc_ref(circular).unwrap().1.to_gencad_string()
+        );
+
+        let elliptical = "1000 -200 1000 200 1000 0 1000 200";
+        assert_eq!(
+            elliptical.to_string(),
+            arc_ref(elliptical).unwrap().1.to_gencad_string()
         );
     }
 }

@@ -22,6 +22,7 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::util::spaces;
 use crate::types::{Number, XYRef, number, x_y_ref};
 
@@ -38,6 +39,12 @@ impl CircleRef {
     fn new(v: (XYRef, Number)) -> Self {
         let (center, radius) = v;
         Self { center, radius }
+    }
+}
+
+impl ToGencadString for CircleRef {
+    fn to_gencad_string(&self) -> String {
+        format!("{} {}", self.center.to_gencad_string(), self.radius)
     }
 }
 
@@ -63,6 +70,15 @@ mod tests {
                     radius: 10.0,
                 }
             ))
+        );
+    }
+
+    #[test]
+    fn test_serialization() {
+        let circle = "1000 -200 10";
+        assert_eq!(
+            circle.to_string(),
+            circle_ref(circle).unwrap().1.to_gencad_string()
         );
     }
 }

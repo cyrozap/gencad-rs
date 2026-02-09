@@ -24,6 +24,7 @@ use nom::combinator::{map, value};
 use nom::sequence::separated_pair;
 use nom::{IResult, Parser};
 
+use crate::serialization::ToGencadString;
 use crate::types::p_integer;
 use crate::types::util::spaces;
 
@@ -54,6 +55,20 @@ impl Dimension {
             "USERM" => Self::UserM(v),
             "USERMM" => Self::UserMm(v),
             _ => panic!("This should never happen!"),
+        }
+    }
+}
+
+impl ToGencadString for Dimension {
+    fn to_gencad_string(&self) -> String {
+        match self {
+            Self::Inch => "INCH".to_string(),
+            Self::Thou => "THOU".to_string(),
+            Self::Mm => "MM".to_string(),
+            Self::Mm100 => "MM100".to_string(),
+            Self::User(units) => format!("USER {}", units),
+            Self::UserM(units) => format!("USERM {}", units),
+            Self::UserMm(units) => format!("USERMM {}", units),
         }
     }
 }

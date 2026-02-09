@@ -18,7 +18,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use crate::impl_to_gencad_string_for_vec;
 use crate::parser::KeywordParam;
+use crate::serialization::ToGencadString;
 
 /// A keyword/parameter pair.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,6 +30,16 @@ pub struct Statement {
     /// The parameter associated with the keyword.
     pub parameter: String,
 }
+
+impl ToGencadString for Statement {
+    fn to_gencad_string(&self) -> String {
+        // NOTE: We don't perform GenCAD conversion on these strings since they
+        // were extracted as-is from the GenCAD file.
+        format!("{} {}", self.keyword, self.parameter)
+    }
+}
+
+impl_to_gencad_string_for_vec!(Statement);
 
 /// Represents an unknown section in a GenCAD file.
 #[derive(Debug, Clone, PartialEq)]
@@ -52,5 +64,17 @@ impl Unknown {
             })
             .collect();
         Ok(Unknown { name, statements })
+    }
+}
+
+impl ToGencadString for Unknown {
+    fn to_gencad_string(&self) -> String {
+        // NOTE: We don't perform GenCAD conversion on the name string since it
+        // was extracted as-is from the GenCAD file.
+        let mut lines = Vec::new();
+        lines.push(format!("${}", self.name));
+        lines.push(self.statements.to_gencad_string());
+        lines.push(format!("$END{}", self.name));
+        lines.join("\r\n")
     }
 }
