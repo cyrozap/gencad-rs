@@ -58,21 +58,21 @@ string_alias!(part_name);
 
 string_alias!(pin_name);
 
-//string_alias!(probe);
+string_alias!(probe);
 
 number_alias!(rot);
 
 string_alias!(shape_name);
 
-//string_alias!(sig_name);
+string_alias!(sig_name);
 
-//string_alias!(tan);
+string_alias!(tan);
 
 //string_alias!(testpad_name);
 
-//string_alias!(tin);
+string_alias!(tin);
 
-//string_alias!(tp_name);
+string_alias!(tp_name);
 
 string_alias!(track_name);
 

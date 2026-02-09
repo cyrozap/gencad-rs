@@ -24,3 +24,4 @@ pub mod devices;
 pub mod header;
 pub mod pads;
 pub mod shapes;
+pub mod signals;

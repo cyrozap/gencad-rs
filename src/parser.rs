@@ -62,6 +62,7 @@ use crate::sections::devices::{Device, parse_devices};
 use crate::sections::header::Header;
 use crate::sections::pads::{Pad, parse_pads};
 use crate::sections::shapes::{Shape, parse_shapes};
+use crate::sections::signals::Signals;
 
 fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
     // Need to consume CR until first LF, then consume all following CRs and LFs
@@ -156,6 +157,7 @@ pub enum ParsedSection {
     Shapes(Vec<Shape>),
     Components(Vec<Component>),
     Devices(Vec<Device>),
+    Signals(Signals),
 }
 
 /// A fully parsed GenCAD file.
@@ -196,6 +198,9 @@ impl ParsedGencadFile {
                 )?)),
                 "DEVICES" => {
                     sections.push(ParsedSection::Devices(parse_devices(&section.parameters)?))
+                }
+                "SIGNALS" => {
+                    sections.push(ParsedSection::Signals(Signals::new(&section.parameters)?))
                 }
                 _ => (),
             }
