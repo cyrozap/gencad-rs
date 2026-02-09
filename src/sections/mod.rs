@@ -19,6 +19,7 @@
  */
 
 pub mod board;
+pub mod components;
 pub mod header;
 pub mod pads;
 pub mod shapes;

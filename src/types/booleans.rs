@@ -32,7 +32,7 @@ macro_rules! bool_parser {
 }
 
 bool_parser!(filled_ref, "YES");
-//bool_parser!(flip, "FLIP");
+bool_parser!(flip, "FLIP");
 
 #[cfg(test)]
 mod tests {
@@ -44,9 +44,9 @@ mod tests {
         assert_eq!(filled_ref("YES"), Ok(("", true)));
     }
 
-    // #[test]
-    // fn test_flip() {
-    //     assert_eq!(flip("0"), Ok(("", false)));
-    //     assert_eq!(flip("FLIP"), Ok(("", true)));
-    // }
+    #[test]
+    fn test_flip() {
+        assert_eq!(flip("0"), Ok(("", false)));
+        assert_eq!(flip("FLIP"), Ok(("", true)));
+    }
 }

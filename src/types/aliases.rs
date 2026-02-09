@@ -42,7 +42,7 @@ macro_rules! number_alias {
 
 string_alias!(artwork_name);
 
-//string_alias!(component_name);
+string_alias!(component_name);
 
 number_alias!(drill_size);
 
@@ -54,7 +54,7 @@ number_alias!(height);
 
 string_alias!(pad_name);
 
-//string_alias!(part_name);
+string_alias!(part_name);
 
 string_alias!(pin_name);
 

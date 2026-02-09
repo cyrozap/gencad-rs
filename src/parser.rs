@@ -57,6 +57,7 @@ use nom::sequence::delimited;
 use nom::{AsChar, IResult, Parser};
 
 use crate::sections::board::Board;
+use crate::sections::components::{Component, parse_components};
 use crate::sections::header::Header;
 use crate::sections::pads::{Pad, parse_pads};
 use crate::sections::shapes::{Shape, parse_shapes};
@@ -152,6 +153,7 @@ pub enum ParsedSection {
     Board(Board),
     Pads(Vec<Pad>),
     Shapes(Vec<Shape>),
+    Components(Vec<Component>),
 }
 
 /// A fully parsed GenCAD file.
@@ -187,6 +189,9 @@ impl ParsedGencadFile {
                 "SHAPES" => {
                     sections.push(ParsedSection::Shapes(parse_shapes(&section.parameters)?))
                 }
+                "COMPONENTS" => sections.push(ParsedSection::Components(parse_components(
+                    &section.parameters,
+                )?)),
                 _ => (),
             }
         }
