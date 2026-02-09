@@ -219,11 +219,20 @@ impl ParsedGencadFile {
 mod tests {
     use super::*;
 
-    use crate::sections::board::{Artwork, ArtworkComponent, BoardShape, Cutout, Mask, Subsection};
+    use crate::sections::board;
+    use crate::sections::board::{ArtworkComponent, BoardShape, Cutout, Mask, Subsection};
+    use crate::sections::components::{self, SubComponent};
+    use crate::sections::devices::PinDesc;
+    use crate::sections::pads;
     use crate::sections::pads::PadShape;
+    use crate::sections::padstacks;
+    use crate::sections::padstacks::Padstack;
+    use crate::sections::shapes;
+    use crate::sections::shapes::{Pin, ShapeElement, SubShape};
+    use crate::sections::signals::{NailLoc, Node, Signal};
     use crate::types::{
-        ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, PadType,
-        RectangleRef, XYRef,
+        ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
+        RectangleRef, TextPar, XYRef,
     };
 
     #[test]
@@ -280,6 +289,17 @@ mod tests {
             "RECTANGLE -5.2 -5.2 10.4 10.4",
             "$ENDPADS",
             "",
+            "$PADSTACKS",
+            "PADSTACK p_stack1 -1",
+            "PAD p102_4 TOP 180 0",
+            "PAD s102_4 BOTTOM 0 0",
+            "PADSTACK p_stack2 -1",
+            "PAD r_r3 TOP 180 MIRRORX",
+            "PAD r_r0 INNER1 180 MIRRORX",
+            "PAD r_r0 INNER2 180 MIRRORX",
+            "PAD r_r3 BOTTOM 180 MIRRORY",
+            "$ENDPADSTACKS",
+            "",
             "$SHAPES",
             "SHAPE CAP_SUPPRESS_TYPE_____24",
             "LINE -1000 200 -1000 -200",
@@ -293,6 +313,49 @@ mod tests {
             "ARTWORK PIN1_MARKER 0 400 0 0",
             "FID PRIMARY OPTICAL1 0 0 TOP 0 0",
             "$ENDSHAPES",
+            "",
+            "$COMPONENTS",
+            "COMPONENT D102",
+            "DEVICE 1N4148",
+            "PLACE 1200 1800",
+            "LAYER TOP",
+            "ROTATION 90",
+            "SHAPE DO35_a MIRRORX 0",
+            "ARTWORK ORIGIN_MARKER 0 0 0 MIRRORX 0",
+            "TEXT 50 -50 100 90 0 TOP D102 42 -50 500 200",
+            "SHEET 12_B3",
+            "COMPONENT U7",
+            "DEVICE 74LS04",
+            "PLACE 0.003 9.52527",
+            "LAYER BOTTOM",
+            "ROTATION 12.25",
+            "SHAPE DIL14 0 FLIP",
+            "ARTWORK PIN1_MARKER 6500 2400 0 MIRRORX FLIP",
+            "$ENDCOMPONENTS",
+            "",
+            "$DEVICES",
+            "DEVICE 89-1N4148",
+            "PART 1N4148",
+            "TYPE DIODE",
+            "PINDESC 1 anode",
+            "PINDESC 2 cathode",
+            "DESC \"Diode 1N4148 bandoleer reverse voltage 100V\"",
+            "$ENDDEVICES",
+            "",
+            "$SIGNALS",
+            "SIGNAL data_bus_7",
+            "NODE IC3 2",
+            "NODE R2 2",
+            "NAILLOC R2 2 -1 500 2500 -1 -1 100T BOTTOM",
+            "NODE IC4 2",
+            "NODE 6Ic2 p34A",
+            "NAILLOC 6Ic2 p34A -1 800 3000 -1 -1 75T BOTTOM",
+            "SIGNAL ADDRESS_BUS_4",
+            "NODE U1 2",
+            "NODE PL12 132",
+            "NAILLOC PL12 132 -1 200 200 -1 -1 100T BOTTOM",
+            "$ENDSIGNALS",
+            "",
         ]
         .join("\r\n");
 
@@ -439,7 +502,7 @@ mod tests {
                                 ],
                                 attributes: vec![]
                             }),
-                            Subsection::Artwork(Artwork {
+                            Subsection::Artwork(board::Artwork {
                                 name: "ORIGIN_MARKER".to_string(),
                                 layer: Layer::Top,
                                 components: vec![
@@ -459,7 +522,7 @@ mod tests {
                         ]
                     }),
                     ParsedSection::Pads(vec![
-                        Pad {
+                        pads::Pad {
                             name: "p0101".to_string(),
                             ptype: PadType::Finger,
                             drill_size: 32.0,
@@ -491,7 +554,7 @@ mod tests {
                             ],
                             attributes: vec![]
                         },
-                        Pad {
+                        pads::Pad {
                             name: "p1053".to_string(),
                             ptype: PadType::Round,
                             drill_size: 20.0,
@@ -501,7 +564,7 @@ mod tests {
                             })],
                             attributes: vec![]
                         },
-                        Pad {
+                        pads::Pad {
                             name: "p2034".to_string(),
                             ptype: PadType::Bullet,
                             drill_size: 32.0,
@@ -532,7 +595,7 @@ mod tests {
                             ],
                             attributes: vec![]
                         },
-                        Pad {
+                        pads::Pad {
                             name: "d_hole_50".to_string(),
                             ptype: PadType::Round,
                             drill_size: 50.0,
@@ -542,7 +605,7 @@ mod tests {
                             })],
                             attributes: vec![]
                         },
-                        Pad {
+                        pads::Pad {
                             name: "3".to_string(),
                             ptype: PadType::Rectangular,
                             drill_size: 0.0,
@@ -553,7 +616,349 @@ mod tests {
                             })],
                             attributes: vec![]
                         }
-                    ])
+                    ]),
+                    ParsedSection::Padstacks(Padstacks {
+                        padstacks: vec![
+                            Padstack {
+                                name: "p_stack1".to_string(),
+                                drill_size: -1.0,
+                                pads: vec![
+                                    padstacks::Pad {
+                                        name: "p102_4".to_string(),
+                                        layer: Layer::Top,
+                                        rotation: 180.0,
+                                        mirror: Mirror::Not
+                                    },
+                                    padstacks::Pad {
+                                        name: "s102_4".to_string(),
+                                        layer: Layer::Bottom,
+                                        rotation: 0.0,
+                                        mirror: Mirror::Not
+                                    }
+                                ]
+                            },
+                            Padstack {
+                                name: "p_stack2".to_string(),
+                                drill_size: -1.0,
+                                pads: vec![
+                                    padstacks::Pad {
+                                        name: "r_r3".to_string(),
+                                        layer: Layer::Top,
+                                        rotation: 180.0,
+                                        mirror: Mirror::MirrorX
+                                    },
+                                    padstacks::Pad {
+                                        name: "r_r0".to_string(),
+                                        layer: Layer::InnerX(1),
+                                        rotation: 180.0,
+                                        mirror: Mirror::MirrorX
+                                    },
+                                    padstacks::Pad {
+                                        name: "r_r0".to_string(),
+                                        layer: Layer::InnerX(2),
+                                        rotation: 180.0,
+                                        mirror: Mirror::MirrorX
+                                    },
+                                    padstacks::Pad {
+                                        name: "r_r3".to_string(),
+                                        layer: Layer::Bottom,
+                                        rotation: 180.0,
+                                        mirror: Mirror::MirrorY
+                                    }
+                                ]
+                            }
+                        ],
+                        attributes: vec![]
+                    }),
+                    ParsedSection::Shapes(vec![Shape {
+                        name: "CAP_SUPPRESS_TYPE_____24".to_string(),
+                        elements: vec![
+                            ShapeElement::Line(LineRef {
+                                start: XYRef {
+                                    x: -1000.0,
+                                    y: 200.0
+                                },
+                                end: XYRef {
+                                    x: -1000.0,
+                                    y: -200.0
+                                }
+                            }),
+                            ShapeElement::Line(LineRef {
+                                start: XYRef {
+                                    x: -1000.0,
+                                    y: -200.0
+                                },
+                                end: XYRef {
+                                    x: 1000.0,
+                                    y: -200.0
+                                }
+                            }),
+                            ShapeElement::Arc(ArcRef::Circular(CircularArcRef {
+                                start: XYRef {
+                                    x: 1000.0,
+                                    y: -200.0
+                                },
+                                end: XYRef {
+                                    x: 1000.0,
+                                    y: 200.0
+                                },
+                                center: XYRef { x: 1000.0, y: 0.0 }
+                            })),
+                            ShapeElement::Line(LineRef {
+                                start: XYRef {
+                                    x: 1000.0,
+                                    y: 200.0
+                                },
+                                end: XYRef {
+                                    x: -1000.0,
+                                    y: 200.0
+                                }
+                            })
+                        ],
+                        insert: None,
+                        height: None,
+                        subshapes: vec![
+                            SubShape::Pin(Pin {
+                                name: "1".to_string(),
+                                pad_name: "p102_4".to_string(),
+                                xy: XYRef {
+                                    x: -100.0,
+                                    y: 100.0
+                                },
+                                layer: Layer::Top,
+                                rotation: 315.0,
+                                mirror: Mirror::Not,
+                                attributes: vec![]
+                            }),
+                            SubShape::Pin(Pin {
+                                name: "1".to_string(),
+                                pad_name: "s106_6".to_string(),
+                                xy: XYRef {
+                                    x: -100.0,
+                                    y: 100.0
+                                },
+                                layer: Layer::Bottom,
+                                rotation: 315.0,
+                                mirror: Mirror::MirrorX,
+                                attributes: vec![]
+                            }),
+                            SubShape::Pin(Pin {
+                                name: "2".to_string(),
+                                pad_name: "p102_4".to_string(),
+                                xy: XYRef {
+                                    x: 100.0,
+                                    y: -100.0
+                                },
+                                layer: Layer::Top,
+                                rotation: 135.0,
+                                mirror: Mirror::Not,
+                                attributes: vec![]
+                            }),
+                            SubShape::Pin(Pin {
+                                name: "2".to_string(),
+                                pad_name: "s106_6".to_string(),
+                                xy: XYRef {
+                                    x: 100.0,
+                                    y: -100.0
+                                },
+                                layer: Layer::Bottom,
+                                rotation: 135.0,
+                                mirror: Mirror::MirrorX,
+                                attributes: vec![]
+                            }),
+                            SubShape::Artwork(shapes::Artwork {
+                                name: "PIN1_MARKER".to_string(),
+                                xy: XYRef { x: 0.0, y: 400.0 },
+                                rotation: 0.0,
+                                mirror: Mirror::Not,
+                                attributes: vec![]
+                            }),
+                            SubShape::Fid(shapes::Fid {
+                                name: "PRIMARY".to_string(),
+                                pad_name: "OPTICAL1".to_string(),
+                                xy: XYRef { x: 0.0, y: 0.0 },
+                                layer: Layer::Top,
+                                rotation: 0.0,
+                                mirror: Mirror::Not,
+                                attributes: vec![]
+                            })
+                        ],
+                        attributes: vec![]
+                    }]),
+                    ParsedSection::Components(vec![
+                        Component {
+                            name: "D102".to_string(),
+                            device: "1N4148".to_string(),
+                            place: XYRef {
+                                x: 1200.0,
+                                y: 1800.0
+                            },
+                            layer: Layer::Top,
+                            rotation: 90.0,
+                            shape: components::Shape {
+                                name: "DO35_a".to_string(),
+                                mirror: Mirror::MirrorX,
+                                flip: false
+                            },
+                            subcomponents: vec![SubComponent::Artwork(components::Artwork {
+                                name: "ORIGIN_MARKER".to_string(),
+                                xy: XYRef { x: 0.0, y: 0.0 },
+                                rotation: 0.0,
+                                mirror: Mirror::MirrorX,
+                                flip: false,
+                                attributes: vec![]
+                            })],
+                            texts: vec![components::Text {
+                                origin: XYRef { x: 50.0, y: -50.0 },
+                                text: TextPar {
+                                    text_size: 100.0,
+                                    rotation: 90.0,
+                                    mirror: Mirror::Not,
+                                    layer: Layer::Top,
+                                    text: "D102".to_string(),
+                                    area: RectangleRef {
+                                        origin: XYRef { x: 42.0, y: -50.0 },
+                                        x: 500.0,
+                                        y: 200.0
+                                    }
+                                }
+                            }],
+                            sheet: Some("12_B3".to_string()),
+                            attributes: vec![]
+                        },
+                        Component {
+                            name: "U7".to_string(),
+                            device: "74LS04".to_string(),
+                            place: XYRef {
+                                x: 0.003,
+                                y: 9.52527
+                            },
+                            layer: Layer::Bottom,
+                            rotation: 12.25,
+                            shape: components::Shape {
+                                name: "DIL14".to_string(),
+                                mirror: Mirror::Not,
+                                flip: true
+                            },
+                            subcomponents: vec![SubComponent::Artwork(components::Artwork {
+                                name: "PIN1_MARKER".to_string(),
+                                xy: XYRef {
+                                    x: 6500.0,
+                                    y: 2400.0
+                                },
+                                rotation: 0.0,
+                                mirror: Mirror::MirrorX,
+                                flip: true,
+                                attributes: vec![]
+                            })],
+                            texts: vec![],
+                            sheet: None,
+                            attributes: vec![]
+                        }
+                    ]),
+                    ParsedSection::Devices(vec![Device {
+                        name: "89-1N4148".to_string(),
+                        part: Some("1N4148".to_string()),
+                        dtype: Some("DIODE".to_string()),
+                        style: None,
+                        package: None,
+                        pin_descriptions: vec![
+                            PinDesc {
+                                pin_name: "1".to_string(),
+                                text: "anode".to_string()
+                            },
+                            PinDesc {
+                                pin_name: "2".to_string(),
+                                text: "cathode".to_string()
+                            }
+                        ],
+                        pin_functions: vec![],
+                        pincount: None,
+                        value: None,
+                        tol: None,
+                        ntol: None,
+                        ptol: None,
+                        volts: None,
+                        desc: Some("Diode 1N4148 bandoleer reverse voltage 100V".to_string()),
+                        attributes: vec![]
+                    }]),
+                    ParsedSection::Signals(Signals {
+                        signals: vec![
+                            Signal {
+                                name: "data_bus_7".to_string(),
+                                nodes: vec![
+                                    Node {
+                                        component_name: "IC3".to_string(),
+                                        pin_name: "2".to_string()
+                                    },
+                                    Node {
+                                        component_name: "R2".to_string(),
+                                        pin_name: "2".to_string()
+                                    },
+                                    Node {
+                                        component_name: "IC4".to_string(),
+                                        pin_name: "2".to_string()
+                                    },
+                                    Node {
+                                        component_name: "6Ic2".to_string(),
+                                        pin_name: "p34A".to_string()
+                                    }
+                                ],
+                                nail_locations: vec![
+                                    NailLoc {
+                                        component_name: "R2".to_string(),
+                                        pin_name: "2".to_string(),
+                                        tp_name: "-1".to_string(),
+                                        xy: XYRef {
+                                            x: 500.0,
+                                            y: 2500.0
+                                        },
+                                        tan: "-1".to_string(),
+                                        tin: "-1".to_string(),
+                                        probe: "100T".to_string(),
+                                        layer: Layer::Bottom
+                                    },
+                                    NailLoc {
+                                        component_name: "6Ic2".to_string(),
+                                        pin_name: "p34A".to_string(),
+                                        tp_name: "-1".to_string(),
+                                        xy: XYRef {
+                                            x: 800.0,
+                                            y: 3000.0
+                                        },
+                                        tan: "-1".to_string(),
+                                        tin: "-1".to_string(),
+                                        probe: "75T".to_string(),
+                                        layer: Layer::Bottom
+                                    }
+                                ]
+                            },
+                            Signal {
+                                name: "ADDRESS_BUS_4".to_string(),
+                                nodes: vec![
+                                    Node {
+                                        component_name: "U1".to_string(),
+                                        pin_name: "2".to_string()
+                                    },
+                                    Node {
+                                        component_name: "PL12".to_string(),
+                                        pin_name: "132".to_string()
+                                    }
+                                ],
+                                nail_locations: vec![NailLoc {
+                                    component_name: "PL12".to_string(),
+                                    pin_name: "132".to_string(),
+                                    tp_name: "-1".to_string(),
+                                    xy: XYRef { x: 200.0, y: 200.0 },
+                                    tan: "-1".to_string(),
+                                    tin: "-1".to_string(),
+                                    probe: "100T".to_string(),
+                                    layer: Layer::Bottom
+                                }]
+                            }
+                        ],
+                        attributes: vec![]
+                    })
                 ]
             }
         );
