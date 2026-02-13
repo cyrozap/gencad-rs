@@ -1,0 +1,2 @@
+# Always use CRLF for GenCAD test files
+*.cad text eol=crlf
