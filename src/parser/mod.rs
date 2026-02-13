@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  src/parser.rs - Parser library for GenCAD files.
+ *  src/parser/mod.rs - Parser library for GenCAD files.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
