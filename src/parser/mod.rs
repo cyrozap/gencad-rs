@@ -185,7 +185,11 @@ impl ParsedGencadFile {
         let mut buffer = Vec::new();
         reader.read_to_end(&mut buffer)?;
 
-        let (_, unparsed_sections) = sections(&buffer).map_err(|err| err.to_owned())?;
+        let (remaining, unparsed_sections) = sections(&buffer).map_err(|err| err.to_owned())?;
+
+        if !remaining.is_empty() {
+            return Err(format!("Unparsed data remaining in file: {:?}", remaining).into());
+        }
 
         let mut sections = Vec::new();
 
