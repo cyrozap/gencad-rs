@@ -64,6 +64,7 @@ use crate::sections::pads::{Pad, parse_pads};
 use crate::sections::padstacks::Padstacks;
 use crate::sections::shapes::{Shape, parse_shapes};
 use crate::sections::signals::Signals;
+use crate::sections::unknown::Unknown;
 
 fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
     // Need to consume CR until first LF, then consume all following CRs and LFs
@@ -160,6 +161,7 @@ pub enum ParsedSection {
     Components(Vec<Component>),
     Devices(Vec<Device>),
     Signals(Signals),
+    Unknown(Unknown),
 }
 
 /// A fully parsed GenCAD file.
@@ -207,7 +209,10 @@ impl ParsedGencadFile {
                 "SIGNALS" => {
                     sections.push(ParsedSection::Signals(Signals::new(&section.parameters)?))
                 }
-                _ => (),
+                unknown_name => sections.push(ParsedSection::Unknown(Unknown::new(
+                    &unknown_name,
+                    &section.parameters,
+                )?)),
             }
         }
 

@@ -31,12 +31,13 @@ use crate::sections::padstacks::Padstack;
 use crate::sections::shapes;
 use crate::sections::shapes::{Pin, ShapeElement, SubShape};
 use crate::sections::signals::{NailLoc, Node, Signal};
+use crate::sections::unknown::{Statement, Unknown};
 use crate::types::{
     ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
     RectangleRef, TextPar, XYRef,
 };
 
-const EXAMPLE: &[u8; 2499] = include_bytes!("fixtures/example.cad");
+const EXAMPLE: &[u8; 2610] = include_bytes!("fixtures/example.cad");
 
 #[test]
 fn test_example() {
@@ -639,7 +640,20 @@ fn test_example() {
                         }
                     ],
                     attributes: vec![]
-                })
+                }),
+                ParsedSection::Unknown(Unknown {
+                    name: "UNKNOWN".to_string(),
+                    statements: vec![
+                        Statement {
+                            keyword: "KEYWORDA".to_string(),
+                            parameter: "parameter1 parameter2 parameter3".to_string()
+                        },
+                        Statement {
+                            keyword: "KEYWORDB".to_string(),
+                            parameter: "parameter1 parameter2 parameter3".to_string()
+                        },
+                    ]
+                }),
             ]
         }
     );
