@@ -24,8 +24,8 @@ use nom::combinator::{map, value};
 use nom::sequence::separated_pair;
 use nom::{IResult, Parser};
 
-use crate::types::p_integer;
-use crate::types::util::spaces;
+use super::p_integer;
+use super::util::spaces;
 
 /// The dimension of the units used in the GenCAD file.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

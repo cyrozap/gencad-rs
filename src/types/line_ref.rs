@@ -22,8 +22,8 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
-use crate::types::util::spaces;
-use crate::types::{XYRef, x_y_ref};
+use super::util::spaces;
+use super::{XYRef, x_y_ref};
 
 /// Specifications for a line.
 #[derive(Debug, Clone, Copy, PartialEq)]

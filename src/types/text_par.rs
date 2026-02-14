@@ -22,15 +22,15 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
-use crate::types::util::spaces;
-use crate::types::{
+use super::util::spaces;
+use super::{
     Layer, Mirror, Number, RectangleRef, layer, mirror, number, rectangle_ref, rot, string,
 };
 
 /// Specifications for a text object.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TextPar {
-    /// The text size in [crate::types::Dimension] units.
+    /// The text size in [super::Dimension] units.
     pub text_size: Number,
     /// The rotation of the text in degrees.
     pub rotation: Number,
@@ -75,7 +75,7 @@ pub fn text_par(s: &str) -> IResult<&str, TextPar> {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::XYRef;
+    use super::super::XYRef;
 
     use super::*;
 

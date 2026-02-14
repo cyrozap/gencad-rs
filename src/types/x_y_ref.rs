@@ -22,8 +22,8 @@ use nom::combinator::map;
 use nom::sequence::separated_pair;
 use nom::{IResult, Parser};
 
-use crate::types::util::spaces;
-use crate::types::{Number, number};
+use super::util::spaces;
+use super::{Number, number};
 
 /// A pair of numbers defining the x and y coordinates of a point on or off board.
 #[derive(Debug, Clone, Copy, PartialEq)]

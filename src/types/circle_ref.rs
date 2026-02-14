@@ -22,8 +22,8 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
-use crate::types::util::spaces;
-use crate::types::{Number, XYRef, number, x_y_ref};
+use super::util::spaces;
+use super::{Number, XYRef, number, x_y_ref};
 
 /// Specifications for a circle.
 #[derive(Debug, Clone, Copy, PartialEq)]

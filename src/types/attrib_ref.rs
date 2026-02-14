@@ -22,8 +22,8 @@ use nom::combinator::map;
 use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
-use crate::types::string;
-use crate::types::util::spaces;
+use super::string;
+use super::util::spaces;
 
 /// Additional data in a section.
 #[derive(Debug, Clone, PartialEq, Eq)]
