@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  src/types/aliases.rs - Parser functions that alias other GenCAD type parsers.
+ *  Parser functions that alias other GenCAD type parsers.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

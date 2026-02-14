@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  src/sections/shapes.rs - Parser for the GenCAD SHAPES section.
+ *  Parser for the GenCAD SHAPES section.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify

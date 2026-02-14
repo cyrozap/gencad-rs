@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  src/types/x_y_ref.rs - Parser for the GenCAD x_y_ref data type.
+ *  Parser for the GenCAD x_y_ref data type.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
