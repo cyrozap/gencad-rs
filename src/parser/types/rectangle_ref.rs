@@ -23,18 +23,9 @@ use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
 use super::util::spaces;
-use super::{Number, XYRef, number, x_y_ref};
+use super::{number, x_y_ref};
 
-/// Specifications for a rectangle.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct RectangleRef {
-    /// The origin of the rectangle.
-    pub origin: XYRef,
-    /// The x-dimension of the rectangle.
-    pub x: Number,
-    /// The y-dimension of the rectangle.
-    pub y: Number,
-}
+use crate::types::{Number, RectangleRef, XYRef};
 
 impl RectangleRef {
     fn new(v: (XYRef, Number, Number)) -> Self {

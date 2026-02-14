@@ -23,9 +23,8 @@ use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
 use crate::parser::types::util::spaces;
-use crate::parser::types::{
-    Attribute, Layer, Mirror, Number, attrib_ref, drill_size, layer, mirror, pad_name, rot,
-};
+use crate::parser::types::{attrib_ref, drill_size, layer, mirror, pad_name, rot};
+use crate::types::{Attribute, Layer, Mirror, Number};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Pad {

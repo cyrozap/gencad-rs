@@ -25,16 +25,7 @@ use nom::{IResult, Parser};
 use super::string;
 use super::util::spaces;
 
-/// Additional data in a section.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Attribute {
-    /// The category of the attribute. Can be used to group a set of attributes.
-    pub category: String,
-    /// The name of the attribute.
-    pub name: String,
-    /// The attribute data.
-    pub data: String,
-}
+use crate::types::Attribute;
 
 impl Attribute {
     fn new(v: (String, String, String)) -> Self {

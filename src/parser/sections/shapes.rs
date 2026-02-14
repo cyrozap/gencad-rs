@@ -24,9 +24,11 @@ use nom::sequence::preceded;
 use crate::parser::KeywordParam;
 use crate::parser::types::util::spaces;
 use crate::parser::types::{
-    ArcRef, Attribute, CircleRef, Layer, LineRef, Mirror, Number, RectangleRef, XYRef, arc_ref,
-    artwork_name, attrib_ref, circle_ref, fid_name, height, layer, line_ref, mirror, pad_name,
-    pin_name, rectangle_ref, rot, shape_name, string, x_y_ref,
+    arc_ref, artwork_name, attrib_ref, circle_ref, fid_name, height, layer, line_ref, mirror,
+    pad_name, pin_name, rectangle_ref, rot, shape_name, string, x_y_ref,
+};
+use crate::types::{
+    ArcRef, Attribute, CircleRef, Layer, LineRef, Mirror, Number, RectangleRef, XYRef,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -422,7 +424,7 @@ pub(crate) fn parse_shapes(
 
 #[cfg(test)]
 mod tests {
-    use crate::parser::types::CircularArcRef;
+    use crate::types::CircularArcRef;
 
     use super::*;
 

@@ -23,9 +23,11 @@ use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
 use crate::parser::types::{
-    ArcRef, Attribute, CircleRef, Layer, LineRef, Number, RectangleRef, TextPar, XYRef, arc_ref,
-    attrib_ref, circle_ref, filled_ref, layer, line_ref, number, rectangle_ref, string, text_par,
-    track_name, util::spaces, x_y_ref,
+    arc_ref, attrib_ref, circle_ref, filled_ref, layer, line_ref, number, rectangle_ref, string,
+    text_par, track_name, util::spaces, x_y_ref,
+};
+use crate::types::{
+    ArcRef, Attribute, CircleRef, Layer, LineRef, Number, RectangleRef, TextPar, XYRef,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -360,7 +362,7 @@ impl Board {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parser::types::CircularArcRef;
+    use crate::types::CircularArcRef;
 
     #[test]
     fn test_example_board() {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Parser for the GenCAD mirror data type.
+ *  Rust definition of the GenCAD number data type.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,4 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::value;
-use nom::{IResult, Parser};
-
-use crate::types::Mirror;
-
-pub fn mirror(s: &str) -> IResult<&str, Mirror> {
-    alt((
-        value(Mirror::Not, tag("0")),
-        value(Mirror::MirrorX, tag("MIRRORX")),
-        value(Mirror::MirrorY, tag("MIRRORY")),
-    ))
-    .parse(s)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(mirror("0"), Ok(("", Mirror::Not)));
-        assert_eq!(mirror("MIRRORX"), Ok(("", Mirror::MirrorX)));
-        assert_eq!(mirror("MIRRORY"), Ok(("", Mirror::MirrorY)));
-    }
-}
+pub type Number = f32;

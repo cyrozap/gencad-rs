@@ -23,7 +23,8 @@ use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
 use crate::parser::types::util::spaces;
-use crate::parser::types::{Attribute, attrib_ref, p_integer, part_name, pin_name, string};
+use crate::parser::types::{attrib_ref, p_integer, part_name, pin_name, string};
+use crate::types::Attribute;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PinDesc {

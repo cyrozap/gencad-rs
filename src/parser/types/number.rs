@@ -21,7 +21,7 @@
 use nom::number::complete::recognize_float;
 use nom::{IResult, ParseTo, Parser};
 
-pub type Number = f32;
+use crate::types::Number;
 
 pub fn number(s: &str) -> IResult<&str, Number> {
     let (remaining, output) = recognize_float.parse(s)?;

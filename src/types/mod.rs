@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Parser for the GenCAD mirror data type.
+ *  Module to contain GenCAD types.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,28 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::value;
-use nom::{IResult, Parser};
+mod arc_ref;
+mod attrib_ref;
+mod circle_ref;
+mod dimension;
+mod layer;
+mod line_ref;
+mod mirror;
+mod number;
+mod pad_type;
+mod rectangle_ref;
+mod text_par;
+mod x_y_ref;
 
-use crate::types::Mirror;
-
-pub fn mirror(s: &str) -> IResult<&str, Mirror> {
-    alt((
-        value(Mirror::Not, tag("0")),
-        value(Mirror::MirrorX, tag("MIRRORX")),
-        value(Mirror::MirrorY, tag("MIRRORY")),
-    ))
-    .parse(s)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(mirror("0"), Ok(("", Mirror::Not)));
-        assert_eq!(mirror("MIRRORX"), Ok(("", Mirror::MirrorX)));
-        assert_eq!(mirror("MIRRORY"), Ok(("", Mirror::MirrorY)));
-    }
-}
+pub use arc_ref::*;
+pub use attrib_ref::*;
+pub use circle_ref::*;
+pub use dimension::*;
+pub use layer::*;
+pub use line_ref::*;
+pub use mirror::*;
+pub use number::*;
+pub use pad_type::*;
+pub use rectangle_ref::*;
+pub use text_par::*;
+pub use x_y_ref::*;

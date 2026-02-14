@@ -27,24 +27,7 @@ use nom::{IResult, Parser};
 use super::p_integer;
 use super::util::spaces;
 
-/// The dimension of the units used in the GenCAD file.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Dimension {
-    /// Inches.
-    Inch,
-    /// Thousandths of an inch.
-    Thou,
-    /// Millimeters.
-    Mm,
-    /// Hundredths of a millimeter.
-    Mm100,
-    /// Number of units per inch.
-    User(u16),
-    /// Number of units per centimeter.
-    UserM(u16),
-    /// Number of units per millimeter.
-    UserMm(u16),
-}
+use crate::types::Dimension;
 
 impl Dimension {
     fn from_pair(user: (&str, u16)) -> Self {

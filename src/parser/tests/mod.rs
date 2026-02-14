@@ -30,11 +30,12 @@ use super::sections::shapes;
 use super::sections::shapes::{Pin, ShapeElement, SubShape};
 use super::sections::signals::{NailLoc, Node, Signal};
 use super::sections::unknown::{Statement, Unknown};
-use super::types::{
+use super::*;
+
+use crate::types::{
     ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
     RectangleRef, TextPar, XYRef,
 };
-use super::*;
 
 const EXAMPLE: &[u8; 2610] = include_bytes!("fixtures/example.cad");
 

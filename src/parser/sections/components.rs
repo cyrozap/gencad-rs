@@ -24,9 +24,10 @@ use nom::sequence::preceded;
 use crate::parser::KeywordParam;
 use crate::parser::types::util::spaces;
 use crate::parser::types::{
-    Attribute, Layer, Mirror, Number, TextPar, XYRef, artwork_name, attrib_ref, component_name,
-    fid_name, flip, layer, mirror, pad_name, part_name, rot, shape_name, string, text_par, x_y_ref,
+    artwork_name, attrib_ref, component_name, fid_name, flip, layer, mirror, pad_name, part_name,
+    rot, shape_name, string, text_par, x_y_ref,
 };
+use crate::types::{Attribute, Layer, Mirror, Number, TextPar, XYRef};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Shape {
@@ -485,7 +486,7 @@ pub(crate) fn parse_components(
 mod tests {
     use super::*;
 
-    use crate::parser::types::RectangleRef;
+    use crate::types::RectangleRef;
 
     #[test]
     fn test_example_components() {

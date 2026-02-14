@@ -24,9 +24,9 @@ use nom::sequence::preceded;
 use crate::parser::KeywordParam;
 use crate::parser::types::util::spaces;
 use crate::parser::types::{
-    Attribute, Layer, XYRef, attrib_ref, component_name, layer, pin_name, probe, sig_name, tan,
-    tin, tp_name, x_y_ref,
+    attrib_ref, component_name, layer, pin_name, probe, sig_name, tan, tin, tp_name, x_y_ref,
 };
+use crate::types::{Attribute, Layer, XYRef};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {

@@ -23,16 +23,9 @@ use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
 use super::util::spaces;
-use super::{XYRef, x_y_ref};
+use super::x_y_ref;
 
-/// Specifications for a line.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct LineRef {
-    /// The start of the line.
-    pub start: XYRef,
-    /// The end of the line.
-    pub end: XYRef,
-}
+use crate::types::{LineRef, XYRef};
 
 impl LineRef {
     fn new(v: (XYRef, XYRef)) -> Self {

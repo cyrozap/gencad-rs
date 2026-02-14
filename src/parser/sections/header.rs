@@ -19,9 +19,8 @@
  */
 
 use crate::parser::KeywordParam;
-use crate::parser::types::{
-    Attribute, Dimension, Number, XYRef, attrib_ref, dimension, number, string, x_y_ref,
-};
+use crate::parser::types::{attrib_ref, dimension, number, string, x_y_ref};
+use crate::types::{Attribute, Dimension, Number, XYRef};
 
 /// Represents the `HEADER` section of a GenCAD file.
 #[derive(Debug, Clone, PartialEq)]

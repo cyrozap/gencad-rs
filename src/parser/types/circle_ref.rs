@@ -23,16 +23,9 @@ use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
 use super::util::spaces;
-use super::{Number, XYRef, number, x_y_ref};
+use super::{number, x_y_ref};
 
-/// Specifications for a circle.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct CircleRef {
-    /// The center of the circle.
-    pub center: XYRef,
-    /// The radius of the circle.
-    pub radius: Number,
-}
+use crate::types::{CircleRef, Number, XYRef};
 
 impl CircleRef {
     fn new(v: (XYRef, Number)) -> Self {

@@ -20,7 +20,9 @@
 
 use nom::IResult;
 
-use super::{Number, number, string};
+use super::{number, string};
+
+use crate::types::Number;
 
 macro_rules! string_alias {
     ($name:ident) => {

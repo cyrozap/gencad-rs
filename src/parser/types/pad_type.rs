@@ -23,28 +23,7 @@ use nom::bytes::complete::tag;
 use nom::combinator::value;
 use nom::{IResult, Parser};
 
-/// Pad types.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PadType {
-    /// A solid rectangular pad with semicircular ends (obround).
-    Finger,
-    /// A solid circle.
-    Round,
-    /// Any shape ring of copper (width unspecified).
-    Annular,
-    /// A solid rectangular pad with one semicircular end.
-    Bullet,
-    /// A solid rectangle or square.
-    Rectangular,
-    /// A solid hexagonal pad with equal length sides.
-    Hexagon,
-    /// A solid octagonal pad with equal length sides.
-    Octagon,
-    /// A solid polygon defined with LINES and ARCS.
-    Polygon,
-    /// Unknown shape; not defined with LINES and ARCS.
-    Unknown,
-}
+use crate::types::PadType;
 
 pub fn pad_type(s: &str) -> IResult<&str, PadType> {
     alt((

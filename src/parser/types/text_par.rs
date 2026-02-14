@@ -23,26 +23,9 @@ use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
 use super::util::spaces;
-use super::{
-    Layer, Mirror, Number, RectangleRef, layer, mirror, number, rectangle_ref, rot, string,
-};
+use super::{layer, mirror, number, rectangle_ref, rot, string};
 
-/// Specifications for a text object.
-#[derive(Debug, Clone, PartialEq)]
-pub struct TextPar {
-    /// The text size in [super::Dimension] units.
-    pub text_size: Number,
-    /// The rotation of the text in degrees.
-    pub rotation: Number,
-    /// The mirror status of the text.
-    pub mirror: Mirror,
-    /// The layer this text belongs to.
-    pub layer: Layer,
-    /// The text itself.
-    pub text: String,
-    /// The rectangular area the text must fit within.
-    pub area: RectangleRef,
-}
+use crate::types::{Layer, Mirror, Number, RectangleRef, TextPar};
 
 impl TextPar {
     fn new(v: (Number, Number, Mirror, Layer, String, RectangleRef)) -> Self {
@@ -75,7 +58,7 @@ pub fn text_par(s: &str) -> IResult<&str, TextPar> {
 
 #[cfg(test)]
 mod tests {
-    use super::super::XYRef;
+    use crate::types::XYRef;
 
     use super::*;
 

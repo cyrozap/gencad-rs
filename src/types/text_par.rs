@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Parser for the GenCAD mirror data type.
+ *  Rust definition of the GenCAD text_par data type.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,21 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::value;
-use nom::{IResult, Parser};
+use super::{Layer, Mirror, Number, RectangleRef};
 
-use crate::types::Mirror;
-
-pub fn mirror(s: &str) -> IResult<&str, Mirror> {
-    alt((
-        value(Mirror::Not, tag("0")),
-        value(Mirror::MirrorX, tag("MIRRORX")),
-        value(Mirror::MirrorY, tag("MIRRORY")),
-    ))
-    .parse(s)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(mirror("0"), Ok(("", Mirror::Not)));
-        assert_eq!(mirror("MIRRORX"), Ok(("", Mirror::MirrorX)));
-        assert_eq!(mirror("MIRRORY"), Ok(("", Mirror::MirrorY)));
-    }
+/// Specifications for a text object.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TextPar {
+    /// The text size in [super::Dimension] units.
+    pub text_size: Number,
+    /// The rotation of the text in degrees.
+    pub rotation: Number,
+    /// The mirror status of the text.
+    pub mirror: Mirror,
+    /// The layer this text belongs to.
+    pub layer: Layer,
+    /// The text itself.
+    pub text: String,
+    /// The rectangular area the text must fit within.
+    pub area: RectangleRef,
 }

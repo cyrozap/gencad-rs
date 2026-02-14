@@ -24,40 +24,9 @@ use nom::sequence::preceded;
 use nom::{IResult, Parser};
 
 use super::util::spaces;
-use super::{Number, XYRef, number, x_y_ref};
+use super::{number, x_y_ref};
 
-/// Specifications for a circular arc.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct CircularArcRef {
-    /// The start coordinate of the arc.
-    pub start: XYRef,
-    /// The end coordinate of the arc.
-    pub end: XYRef,
-    /// The center of the circular arc.
-    pub center: XYRef,
-}
-
-/// Specifications for a circular arc.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct EllipticalArcRef {
-    /// The start coordinate of the arc.
-    pub start: XYRef,
-    /// The end coordinate of the arc.
-    pub end: XYRef,
-    /// The center of the circular arc.
-    pub center: XYRef,
-    /// Major radius of the ellipse.
-    pub major_radius: Number,
-    /// Minor radius of the ellipse.
-    pub minor_radius: Number,
-}
-
-/// Specifications for an arc.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ArcRef {
-    Circular(CircularArcRef),
-    Elliptical(EllipticalArcRef),
-}
+use crate::types::{ArcRef, CircularArcRef, EllipticalArcRef, Number, XYRef};
 
 impl ArcRef {
     fn new_circular(v: (XYRef, XYRef, XYRef)) -> Self {
