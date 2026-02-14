@@ -50,6 +50,7 @@
  * ```
  */
 
+pub mod sections;
 pub(crate) mod types;
 
 use nom::bytes::complete::{is_a, tag, take_till, take_while, take_while1};
@@ -58,15 +59,15 @@ use nom::multi::{many0, many1};
 use nom::sequence::delimited;
 use nom::{AsChar, IResult, Parser};
 
-use crate::sections::board::Board;
-use crate::sections::components::{Component, parse_components};
-use crate::sections::devices::{Device, parse_devices};
-use crate::sections::header::Header;
-use crate::sections::pads::{Pad, parse_pads};
-use crate::sections::padstacks::Padstacks;
-use crate::sections::shapes::{Shape, parse_shapes};
-use crate::sections::signals::Signals;
-use crate::sections::unknown::Unknown;
+use sections::board::Board;
+use sections::components::{Component, parse_components};
+use sections::devices::{Device, parse_devices};
+use sections::header::Header;
+use sections::pads::{Pad, parse_pads};
+use sections::padstacks::Padstacks;
+use sections::shapes::{Shape, parse_shapes};
+use sections::signals::Signals;
+use sections::unknown::Unknown;
 
 fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
     // Need to consume CR until first LF, then consume all following CRs and LFs

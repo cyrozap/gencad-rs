@@ -18,24 +18,23 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use super::sections::board;
+use super::sections::board::{ArtworkComponent, BoardShape, Cutout, Mask, Subsection};
+use super::sections::components::{self, SubComponent};
+use super::sections::devices::PinDesc;
+use super::sections::pads;
+use super::sections::pads::PadShape;
+use super::sections::padstacks;
+use super::sections::padstacks::Padstack;
+use super::sections::shapes;
+use super::sections::shapes::{Pin, ShapeElement, SubShape};
+use super::sections::signals::{NailLoc, Node, Signal};
+use super::sections::unknown::{Statement, Unknown};
 use super::types::{
     ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
     RectangleRef, TextPar, XYRef,
 };
 use super::*;
-
-use crate::sections::board;
-use crate::sections::board::{ArtworkComponent, BoardShape, Cutout, Mask, Subsection};
-use crate::sections::components::{self, SubComponent};
-use crate::sections::devices::PinDesc;
-use crate::sections::pads;
-use crate::sections::pads::PadShape;
-use crate::sections::padstacks;
-use crate::sections::padstacks::Padstack;
-use crate::sections::shapes;
-use crate::sections::shapes::{Pin, ShapeElement, SubShape};
-use crate::sections::signals::{NailLoc, Node, Signal};
-use crate::sections::unknown::{Statement, Unknown};
 
 const EXAMPLE: &[u8; 2610] = include_bytes!("fixtures/example.cad");
 
