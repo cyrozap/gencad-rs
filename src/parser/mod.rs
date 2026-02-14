@@ -226,6 +226,3 @@ impl ParsedGencadFile {
         Ok(Self { sections })
     }
 }
-
-#[cfg(test)]
-mod tests;

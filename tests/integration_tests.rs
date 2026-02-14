@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Tests for the parser module.
+ *  Tests for the library.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,21 +18,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use super::sections::board;
-use super::sections::board::{ArtworkComponent, BoardShape, Cutout, Mask, Subsection};
-use super::sections::components::{self, SubComponent};
-use super::sections::devices::PinDesc;
-use super::sections::pads;
-use super::sections::pads::PadShape;
-use super::sections::padstacks;
-use super::sections::padstacks::Padstack;
-use super::sections::shapes;
-use super::sections::shapes::{Pin, ShapeElement, SubShape};
-use super::sections::signals::{NailLoc, Node, Signal};
-use super::sections::unknown::{Statement, Unknown};
-use super::*;
-
-use crate::types::{
+use gencad::parser::sections::board::{
+    self, ArtworkComponent, Board, BoardShape, Cutout, Mask, Subsection,
+};
+use gencad::parser::sections::components::{self, Component, SubComponent};
+use gencad::parser::sections::devices::{Device, PinDesc};
+use gencad::parser::sections::header::Header;
+use gencad::parser::sections::pads::{self, PadShape};
+use gencad::parser::sections::padstacks::{self, Padstack, Padstacks};
+use gencad::parser::sections::shapes::{self, Pin, Shape, ShapeElement, SubShape};
+use gencad::parser::sections::signals::{NailLoc, Node, Signal, Signals};
+use gencad::parser::sections::unknown::{Statement, Unknown};
+use gencad::parser::{ParsedGencadFile, ParsedSection};
+use gencad::types::{
     ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
     RectangleRef, TextPar, XYRef,
 };
