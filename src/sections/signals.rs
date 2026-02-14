@@ -22,8 +22,8 @@ use nom::Parser;
 use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
-use crate::types::util::spaces;
-use crate::types::{
+use crate::parser::types::util::spaces;
+use crate::parser::types::{
     Attribute, Layer, XYRef, attrib_ref, component_name, layer, pin_name, probe, sig_name, tan,
     tin, tp_name, x_y_ref,
 };

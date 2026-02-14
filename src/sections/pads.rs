@@ -22,7 +22,7 @@ use nom::Parser;
 use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
-use crate::types::{
+use crate::parser::types::{
     ArcRef, Attribute, CircleRef, LineRef, Number, PadType, RectangleRef, arc_ref, attrib_ref,
     circle_ref, drill_size, line_ref, pad_name, pad_type, rectangle_ref, util::spaces,
 };
@@ -139,7 +139,7 @@ pub(crate) fn parse_pads(params: &[KeywordParam]) -> Result<Vec<Pad>, Box<dyn st
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{CircularArcRef, XYRef};
+    use crate::parser::types::{CircularArcRef, XYRef};
 
     #[test]
     fn test_example_pads() {

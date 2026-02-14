@@ -18,6 +18,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use super::types::{
+    ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
+    RectangleRef, TextPar, XYRef,
+};
 use super::*;
 
 use crate::sections::board;
@@ -32,10 +36,6 @@ use crate::sections::shapes;
 use crate::sections::shapes::{Pin, ShapeElement, SubShape};
 use crate::sections::signals::{NailLoc, Node, Signal};
 use crate::sections::unknown::{Statement, Unknown};
-use crate::types::{
-    ArcRef, Attribute, CircleRef, CircularArcRef, Dimension, Layer, LineRef, Mirror, PadType,
-    RectangleRef, TextPar, XYRef,
-};
 
 const EXAMPLE: &[u8; 2610] = include_bytes!("fixtures/example.cad");
 

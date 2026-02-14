@@ -19,7 +19,7 @@
  */
 
 use crate::parser::KeywordParam;
-use crate::types::{
+use crate::parser::types::{
     Attribute, Dimension, Number, XYRef, attrib_ref, dimension, number, string, x_y_ref,
 };
 

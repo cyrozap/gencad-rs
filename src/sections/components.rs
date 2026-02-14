@@ -22,8 +22,8 @@ use nom::Parser;
 use nom::sequence::preceded;
 
 use crate::parser::KeywordParam;
-use crate::types::util::spaces;
-use crate::types::{
+use crate::parser::types::util::spaces;
+use crate::parser::types::{
     Attribute, Layer, Mirror, Number, TextPar, XYRef, artwork_name, attrib_ref, component_name,
     fid_name, flip, layer, mirror, pad_name, part_name, rot, shape_name, string, text_par, x_y_ref,
 };
@@ -485,7 +485,7 @@ pub(crate) fn parse_components(
 mod tests {
     use super::*;
 
-    use crate::types::RectangleRef;
+    use crate::parser::types::RectangleRef;
 
     #[test]
     fn test_example_components() {

@@ -50,6 +50,8 @@
  * ```
  */
 
+pub(crate) mod types;
+
 use nom::bytes::complete::{is_a, tag, take_till, take_while, take_while1};
 use nom::combinator::{fail, map_res};
 use nom::multi::{many0, many1};
