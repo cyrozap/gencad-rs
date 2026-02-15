@@ -18,6 +18,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*!
+ * # GenCAD types
+ *
+ * This module provides Rust definitions of GenCAD types.
+ *
+ */
+
 mod arc_ref;
 mod attrib_ref;
 mod circle_ref;

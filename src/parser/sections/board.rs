@@ -30,18 +30,27 @@ use crate::types::{
     ArcRef, Attribute, CircleRef, Layer, LineRef, Number, RectangleRef, TextPar, XYRef,
 };
 
+/// Represents a geometric shape used in board outlines, cutouts, or masks.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum BoardShape {
+    /// A straight line forming part of the board outline, cutout, or mask.
     Line(LineRef),
+    /// A circular or elliptical arc forming part of the board outline, cutout, or mask.
     Arc(ArcRef),
+    /// A full circle forming part of the board outline, cutout, or mask.
     Circle(CircleRef),
+    /// A rectangle forming part of the board outline, cutout, or mask.
     Rectangle(RectangleRef),
 }
 
+/// Represents an internal area of the board where all layers are cut away.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Cutout {
+    /// A unique identifier for the cutout (e.g., "cutout1", "cutout2").
     pub name: String,
+    /// Geometric shapes defining the cutout's boundary.
     pub shapes: Vec<BoardShape>,
+    /// Additional metadata associated with the cutout.
     pub attributes: Vec<Attribute>,
 }
 
@@ -58,11 +67,16 @@ impl Cutout {
     }
 }
 
+/// Represents an area of the board that is inaccessible to test pins.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Mask {
+    /// A unique identifier for the masked area (e.g., "mask1", "mask2").
     pub name: String,
+    /// The board layer to which this mask applies (e.g., [Layer::Top], [Layer::Bottom]).
     pub layer: Layer,
+    /// Geometric shapes defining the masked area's boundary.
     pub shapes: Vec<BoardShape>,
+    /// Additional metadata associated with the mask.
     pub attributes: Vec<Attribute>,
 }
 
@@ -80,9 +94,12 @@ impl Mask {
     }
 }
 
+/// Represents a text string attached to a component or artwork feature.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Text {
+    /// The bottom-left corner of the text relative to the component's origin.
     pub origin: XYRef,
+    /// Specifies the text's size, rotation, mirror, layer, and bounding rectangle.
     pub text: TextPar,
 }
 
@@ -92,22 +109,35 @@ impl Text {
     }
 }
 
+/// Represents a component of an artwork feature on the board.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArtworkComponent {
+    /// A straight line forming part of the artwork.
     Line(LineRef),
+    /// A circular arc forming part of the artwork.
     Arc(ArcRef),
+    /// A full circle forming part of the artwork.
     Circle(CircleRef),
+    /// A rectangle forming part of the artwork.
     Rectangle(RectangleRef),
+    /// A track type defined in the `TRACKS` section.
     Track(String),
+    /// Indicates whether the following shapes form an enclosed area.
     Filled(bool),
+    /// A text string attached to the artwork.
     Text(Text),
 }
 
+/// Represents an artwork feature on the board (e.g., silkscreen, routing).
 #[derive(Debug, Clone, PartialEq)]
 pub struct Artwork {
+    /// A unique identifier for the artwork feature (e.g., "artwork1", "artwork2").
     pub name: String,
+    /// The board layer to which this artwork applies (e.g., [Layer::Top], [Layer::Bottom]).
     pub layer: Layer,
+    /// Components (lines, arcs, text, etc.) defining the artwork.
     pub components: Vec<ArtworkComponent>,
+    /// Additional metadata associated with the artwork.
     pub attributes: Vec<Attribute>,
 }
 
@@ -125,10 +155,14 @@ impl Artwork {
     }
 }
 
+/// Represents a subsection within the `BOARD` section (e.g., cutouts, masks, artwork).
 #[derive(Debug, Clone, PartialEq)]
 pub enum Subsection {
+    /// A named internal area of the board where all layers are cut away.
     Cutout(Cutout),
+    /// A named area of the board that is inaccessible to test pins.
     Mask(Mask),
+    /// A named artwork feature on the board.
     Artwork(Artwork),
 }
 
@@ -138,16 +172,16 @@ enum BoardParserState {
     Subsection(Subsection),
 }
 
-/// Represents the `BOARD` section of a GenCAD file.
+/// Represents the `BOARD` section of a GenCAD file, defining the board's outer shape and internal features.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Board {
-    /// The board thickness, if specified.
+    /// The thickness of the board in the [crate::types::Dimension] units specified in the `HEADER` section.
     pub thickness: Option<Number>,
-    /// The shapes that make up the board outline.
+    /// Geometric shapes defining the board's outer edge.
     pub outline_shapes: Vec<BoardShape>,
-    /// A list of attributes associated with the board.
+    /// Additional metadata associated with the board.
     pub attributes: Vec<Attribute>,
-    /// A list of subsections in the board.
+    /// Subsections such as cutouts, masks, and artwork features.
     pub subsections: Vec<Subsection>,
 }
 

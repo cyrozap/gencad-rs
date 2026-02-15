@@ -23,8 +23,8 @@ use super::Number;
 /// A pair of numbers defining the x and y coordinates of a point on or off board.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct XYRef {
-    /// The x-coordinate.
+    /// The x-coordinate in [super::Dimension] units.
     pub x: Number,
-    /// The y-coordinate.
+    /// The y-coordinate in [super::Dimension] units.
     pub y: Number,
 }

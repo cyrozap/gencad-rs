@@ -29,10 +29,14 @@ use crate::parser::types::{
 };
 use crate::types::{Attribute, Layer, Mirror, Number, TextPar, XYRef};
 
+/// A shape definition used by a component to describe its geometry and orientation.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Shape {
+    /// The name of the shape as defined in the `SHAPES` section.
     pub name: String,
+    /// The mirror state of the shape. Mirroring is applied before rotation.
     pub mirror: Mirror,
+    /// The flip state of the shape. Flipping changes the layer of the shape and its features.
     pub flip: bool,
 }
 
@@ -47,13 +51,20 @@ impl Shape {
     }
 }
 
+/// An artwork feature defined in the `ARTWORKS` section, placed relative to a component.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Artwork {
+    /// The name of the artwork as defined in the `ARTWORKS` section.
     pub name: String,
+    /// The position of the artwork's origin relative to the component origin.
     pub xy: XYRef,
+    /// The rotation of the artwork around its origin, in degrees counterclockwise.
     pub rotation: Number,
+    /// The mirror state of the artwork. Mirroring is applied before rotation.
     pub mirror: Mirror,
+    /// The flip state of the artwork. Flipping changes the layer of the artwork and its features.
     pub flip: bool,
+    /// Additional metadata associated with the artwork.
     pub attributes: Vec<Attribute>,
 }
 
@@ -82,15 +93,24 @@ impl Artwork {
     }
 }
 
+/// A fiducial marker used for alignment, referencing a pad or padstack.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Fid {
+    /// The name of the fiducial. Must be unique within the component.
     pub name: String,
+    /// The name of the pad or padstack used for the fiducial, as defined in `PADS` or `PADSTACKS`.
     pub pad_name: String,
+    /// The position of the fiducial's center relative to the component origin.
     pub xy: XYRef,
+    /// The layer on which the fiducial is placed, relative to the shape's layer.
     pub layer: Layer,
+    /// The rotation of the fiducial around its origin, in degrees counterclockwise.
     pub rotation: Number,
+    /// The mirror state of the fiducial. Mirroring is applied before rotation.
     pub mirror: Mirror,
+    /// The flip state of the fiducial. Flipping changes the layer of the fiducial and its features.
     pub flip: bool,
+    /// Additional metadata associated with the fiducial.
     pub attributes: Vec<Attribute>,
 }
 
@@ -123,9 +143,12 @@ impl Fid {
     }
 }
 
+/// A text string associated with a component, such as its name or label.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Text {
+    /// The bottom-left corner of the text relative to the component's origin.
     pub origin: XYRef,
+    /// Specifies the text's size, rotation, mirror, layer, and bounding rectangle.
     pub text: TextPar,
 }
 
@@ -151,31 +174,53 @@ enum ComponentParserState {
     SubComponent(SubComponent),
 }
 
+/// A component placed on the board, referencing a device and shape definition.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Component {
+    /// The name of the component. Must be unique per component.
     pub name: String,
+    /// The name of the device that this component references, as defined in the `DEVICES` section.
     pub device: String,
+    /// The origin of the component on the board, used as a reference for shape and pin positions.
     pub place: XYRef,
+    /// The side of the board this component is placed on. Does not imply mirroring.
     pub layer: Layer,
+    /// The counterclockwise rotation of the component in degrees, relative to the shape definition.
     pub rotation: Number,
+    /// The shape of the component, as defined in the `SHAPES` section.
     pub shape: Shape,
+    /// A list of subcomponents such as artwork or fiducials associated with this component.
     pub subcomponents: Vec<SubComponent>,
+    /// A list of text strings associated with this component.
     pub texts: Vec<Text>,
+    /// The schematic sheet number, zone, or anything else that is a location property of the component.
     pub sheet: Option<String>,
+    /// Miscellaneous information that is relevant to this component.
     pub attributes: Vec<Attribute>,
 }
 
+/// A prototype for a component being parsed, used to build a fully constructed `Component`.
 #[derive(Debug, Clone, PartialEq)]
 struct ComponentPrototype {
+    /// The name of the component. Must be unique per component.
     pub name: String,
+    /// The name of the device that this component references, as defined in the `DEVICES` section.
     pub device: Option<String>,
+    /// The origin of the component on the board, used as a reference for shape and pin positions.
     pub place: Option<XYRef>,
+    /// The side of the board this component is placed on. Does not imply mirroring.
     pub layer: Option<Layer>,
+    /// The counterclockwise rotation of the component in degrees, relative to the shape definition.
     pub rotation: Option<Number>,
+    /// The shape of the component, as defined in the `SHAPES` section.
     pub shape: Option<Shape>,
+    /// A list of subcomponents such as artwork or fiducials associated with this component.
     pub subcomponents: Vec<SubComponent>,
+    /// A list of text strings associated with this component.
     pub texts: Vec<Text>,
+    /// The schematic sheet number, zone, or anything else that is a location property of the component.
     pub sheet: Option<String>,
+    /// Miscellaneous information that is relevant to this component.
     pub attributes: Vec<Attribute>,
 }
 

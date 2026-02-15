@@ -28,20 +28,35 @@ use crate::parser::types::{
 };
 use crate::types::{ArcRef, Attribute, CircleRef, LineRef, Number, PadType, RectangleRef};
 
+/// A geometric shape that is used to define the outer edge of a pad. All coordinates are relative to the pad's origin.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PadShape {
+    /// A straight line forming part of the pad's outer edge.
     Line(LineRef),
+    /// A circular or elliptical arc forming part of the pad's outer edge.
     Arc(ArcRef),
+    /// A full circle forming the pad's outer edge.
     Circle(CircleRef),
+    /// A rectangle forming the pad's outer edge.
     Rectangle(RectangleRef),
 }
 
+/// A pad on the circuit board. Pads define the physical shape and drill hole of contact points on the board.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Pad {
+    /// The name of the pad. Must be unique per pad and used consistently
+    /// throughout the file. If the CAD system does not assign names, sequential
+    /// names like "pad1", "pad2", etc., must be used.
     pub name: String,
+    /// The type of the pad.
     pub ptype: PadType,
+    /// The drill hole size in [crate::types::Dimension] units. A value of `0.0`
+    /// indicates no hole. If undefined, a value of `-1.0` must be used.
     pub drill_size: Number,
+    /// The list of shapes that define the outer edge of the pad. All
+    /// coordinates are relative to the pad's origin.
     pub shapes: Vec<PadShape>,
+    /// Optional metadata associated with the pad.
     pub attributes: Vec<Attribute>,
 }
 

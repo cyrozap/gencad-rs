@@ -31,7 +31,7 @@ pub struct CircularArcRef {
     pub center: XYRef,
 }
 
-/// Specifications for a circular arc.
+/// Specifications for an elliptical arc.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct EllipticalArcRef {
     /// The start coordinate of the arc.
@@ -40,9 +40,9 @@ pub struct EllipticalArcRef {
     pub end: XYRef,
     /// The center of the circular arc.
     pub center: XYRef,
-    /// Major radius of the ellipse.
+    /// Major radius of the ellipse in [super::Dimension] units.
     pub major_radius: Number,
-    /// Minor radius of the ellipse.
+    /// Minor radius of the ellipse in [super::Dimension] units.
     pub minor_radius: Number,
 }
 

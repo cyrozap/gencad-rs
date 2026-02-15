@@ -31,25 +31,41 @@ use crate::types::{
     ArcRef, Attribute, CircleRef, Layer, LineRef, Mirror, Number, RectangleRef, XYRef,
 };
 
+/// Geometric elements that define the outline of a component shape.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ShapeElement {
+    /// A straight line forming part of the shape.
     Line(LineRef),
+    /// A circular or elliptical arc forming part of the shape.
     Arc(ArcRef),
+    /// A full circle forming part of the shape.
     Circle(CircleRef),
+    /// A rectangle forming part of the shape.
     Rectangle(RectangleRef),
+    /// A fiducial point defined by its coordinates relative to the shape origin.
     Fiducial(XYRef),
 }
 
+/// Optional package style for component insertion.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Insert {
+    /// Through-hole package.
     Th,
+    /// Axial leaded package.
     Axial,
+    /// Radial leaded package.
     Radial,
+    /// Dual in-line package.
     Dip,
+    /// Single in-line package.
     Sip,
+    /// Zig-zag in-line package.
     Zip,
+    /// Through-hole connector package.
     Conn,
+    /// Surface-mount device package.
     Smd,
+    /// Package styles other than through-hole or surface-mount.
     Other,
 }
 
@@ -70,12 +86,18 @@ impl Insert {
     }
 }
 
+/// An artwork feature defined in the `ARTWORKS` section, placed relative to the shape origin.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Artwork {
+    /// The name of the artwork as defined in the `ARTWORKS` section.
     pub name: String,
+    /// The position of the artwork's origin relative to the shape origin.
     pub xy: XYRef,
+    /// The rotation of the artwork around its origin, in degrees counterclockwise.
     pub rotation: Number,
+    /// The mirror state of the artwork (applied before rotation).
     pub mirror: Mirror,
+    /// Additional metadata associated with the artwork.
     pub attributes: Vec<Attribute>,
 }
 
@@ -102,14 +124,22 @@ impl Artwork {
     }
 }
 
+/// A fiducial marker using a pad or padstack, defined relative to the shape origin.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Fid {
+    /// The name of the fiducial (must be unique within the shape).
     pub name: String,
+    /// The name of the pad or padstack used for the fiducial.
     pub pad_name: String,
+    /// The position of the fiducial's center relative to the shape origin.
     pub xy: XYRef,
+    /// The layer on which the fiducial is placed, relative to the shape's layer.
     pub layer: Layer,
+    /// The rotation of the fiducial around its origin, in degrees counterclockwise.
     pub rotation: Number,
+    /// The mirror state of the fiducial (applied before rotation).
     pub mirror: Mirror,
+    /// Additional metadata associated with the fiducial.
     pub attributes: Vec<Attribute>,
 }
 
@@ -140,14 +170,22 @@ impl Fid {
     }
 }
 
+/// A pin defined using a pad or padstack, placed relative to the shape origin.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Pin {
+    /// The name of the pin (must match device pin names).
     pub name: String,
+    /// The name of the pad or padstack used for the pin.
     pub pad_name: String,
+    /// The position of the pin's center relative to the shape origin.
     pub xy: XYRef,
+    /// The layer on which the pin is placed, relative to the shape's layer.
     pub layer: Layer,
+    /// The rotation of the pin around its origin, in degrees counterclockwise.
     pub rotation: Number,
+    /// The mirror state of the pin (applied before rotation).
     pub mirror: Mirror,
+    /// Additional metadata associated with the pin.
     pub attributes: Vec<Attribute>,
 }
 
@@ -178,10 +216,14 @@ impl Pin {
     }
 }
 
+/// A subcomponent (artwork, fiducial, or pin) associated with a shape.
 #[derive(Debug, Clone, PartialEq)]
 pub enum SubShape {
+    /// An artwork feature defined in the `ARTWORKS` section.
     Artwork(Artwork),
+    /// A fiducial marker using a pad or padstack.
     Fid(Fid),
+    /// A pin defined using a pad or padstack.
     Pin(Pin),
 }
 
@@ -191,13 +233,20 @@ enum ShapeParserState {
     SubShape(SubShape),
 }
 
+/// A reusable component outline defined in the `SHAPES` section.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Shape {
+    /// The unique name of the shape.
     pub name: String,
+    /// Geometric elements defining the shape's outline.
     pub elements: Vec<ShapeElement>,
+    /// Optional package style for component insertion.
     pub insert: Option<Insert>,
+    /// The maximum height of the component from the board's surface.
     pub height: Option<Number>,
+    /// Subcomponents (artwork, fiducials, or pins) associated with the shape.
     pub subshapes: Vec<SubShape>,
+    /// Additional metadata associated with the shape.
     pub attributes: Vec<Attribute>,
 }
 

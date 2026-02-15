@@ -26,9 +26,12 @@ use crate::parser::types::util::spaces;
 use crate::parser::types::{attrib_ref, p_integer, part_name, pin_name, string};
 use crate::types::Attribute;
 
+/// A pin description for a device, typically used to describe the function or role of a pin.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PinDesc {
+    /// The name of the pin as defined in the device's shape and used in signals.
     pub pin_name: String,
+    /// A textual description of the pin's purpose or function.
     pub text: String,
 }
 
@@ -42,9 +45,12 @@ impl PinDesc {
     }
 }
 
+/// A pin function for a device, typically used to describe the pin's role in tester output data.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PinFunct {
+    /// The name of the pin as defined in the device's shape and used in signals.
     pub pin_name: String,
+    /// A textual description of the pin's functional behavior.
     pub text: String,
 }
 
@@ -58,22 +64,38 @@ impl PinFunct {
     }
 }
 
+/// A device used on the board. These descriptions are independent of board geometry and are used for cross-referencing components.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Device {
+    /// The name of the device. Must be unique per device.
     pub name: String,
+    /// An optional corporate part number or CAD part name. Does not need to be unique.
     pub part: Option<String>,
+    /// An optional field to define the component type (e.g., "RES" for resistor).
     pub dtype: Option<String>,
+    /// An optional field to enhance the `dtype` with additional information.
     pub style: Option<String>,
+    /// An optional field to define the physical package type (e.g., "DIL_8", "TO99").
     pub package: Option<String>,
+    /// A list of pin descriptions, typically used for CAD data.
     pub pin_descriptions: Vec<PinDesc>,
+    /// A list of pin functions, typically used for tester output data.
     pub pin_functions: Vec<PinFunct>,
+    /// An optional field to define the number of physical pins on the device.
     pub pincount: Option<u16>,
+    /// An optional field to define the value of the device (e.g., resistance for resistors).
     pub value: Option<String>,
+    /// An optional field to define a ± tolerance for the device.
     pub tol: Option<String>,
+    /// An optional field to define the negative (minimum) tolerance for the device.
     pub ntol: Option<String>,
+    /// An optional field to define the positive (maximum) tolerance for the device.
     pub ptol: Option<String>,
+    /// An optional field to define a voltage rating for the device.
     pub volts: Option<String>,
+    /// An optional free text field to describe the device.
     pub desc: Option<String>,
+    /// A list of additional attributes associated with the device.
     pub attributes: Vec<Attribute>,
 }
 

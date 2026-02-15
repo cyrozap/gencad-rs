@@ -25,6 +25,6 @@ use super::{Number, XYRef};
 pub struct CircleRef {
     /// The center of the circle.
     pub center: XYRef,
-    /// The radius of the circle.
+    /// The radius of the circle in [super::Dimension] units.
     pub radius: Number,
 }

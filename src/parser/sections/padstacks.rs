@@ -26,11 +26,18 @@ use crate::parser::types::util::spaces;
 use crate::parser::types::{attrib_ref, drill_size, layer, mirror, pad_name, rot};
 use crate::types::{Attribute, Layer, Mirror, Number};
 
+/// A single pad within a [Padstack]. All pads in a stack share the same origin.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Pad {
+    /// The name of the pad, referencing a definition in the `PADS` section.
     pub name: String,
+    /// The board layer on which the pad is placed (e.g., [Layer::Top], [Layer::Inner]).
+    /// Mirroring the pad stack will invert this layer.
     pub layer: Layer,
+    /// The rotation angle in degrees, counter-clockwise from the pad's original definition.
+    /// Applied after any mirroring.
     pub rotation: Number,
+    /// The mirror state of the pad (applied before rotation).
     pub mirror: Mirror,
 }
 
@@ -54,10 +61,19 @@ impl Pad {
     }
 }
 
+/// A collection of pads arranged to form a single logical pad stack.
+/// Used to define complex pad arrangements for components.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Padstack {
+    /// A unique name for this pad stack. Must not conflict with any pad name in the `PADS` section.
+    /// If undefined, sequential names like "padstack1", "padstack2", etc., should be used.
     pub name: String,
+    /// The drill hole size in [crate::types::Dimension] units for the entire stack.
+    /// - `0.0` means no hole.
+    /// - `-1.0` means undefined (use individual pad definitions).
+    /// - `-2.0` means use the drill size of the first pad in the stack.
     pub drill_size: Number,
+    /// The list of pads in this stack. All pads share the same origin.
     pub pads: Vec<Pad>,
 }
 
@@ -155,10 +171,13 @@ impl PadstacksParser {
     }
 }
 
-/// Represents the `PADSTACKS` section of a GenCAD file.
+/// Represents the optional `PADSTACKS` section of a GenCAD file.
+/// Defines how multiple pads can be grouped into a single logical pad stack.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Padstacks {
+    /// All defined pad stacks in the section.
     pub padstacks: Vec<Padstack>,
+    /// Additional metadata associated with the `PADSTACKS` section.
     pub attributes: Vec<Attribute>,
 }
 

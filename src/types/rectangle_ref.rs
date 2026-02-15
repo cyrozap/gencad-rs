@@ -25,8 +25,8 @@ use super::{Number, XYRef};
 pub struct RectangleRef {
     /// The origin of the rectangle.
     pub origin: XYRef,
-    /// The x-dimension of the rectangle.
+    /// The x-dimension of the rectangle in [super::Dimension] units.
     pub x: Number,
-    /// The y-dimension of the rectangle.
+    /// The y-dimension of the rectangle in [super::Dimension] units.
     pub y: Number,
 }

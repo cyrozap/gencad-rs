@@ -28,9 +28,12 @@ use crate::parser::types::{
 };
 use crate::types::{Attribute, Layer, XYRef};
 
+/// A connection point on a component, defined by its component and pin names.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
+    /// The name of the component as defined in the `COMPONENTS` section.
     pub component_name: String,
+    /// The name of the pin as defined in the `SHAPES` section.
     pub pin_name: String,
 }
 
@@ -47,15 +50,24 @@ impl Node {
     }
 }
 
+/// A preferred test point location for a signal, used in bed-of-nails testing.
 #[derive(Debug, Clone, PartialEq)]
 pub struct NailLoc {
+    /// The name of the component as defined in the `COMPONENTS` section.
     pub component_name: String,
+    /// The name of the pin as defined in the `SHAPES` section.
     pub pin_name: String,
+    /// The test pin name. Use "-1" if no unique name is assigned.
     pub tp_name: String,
+    /// The absolute coordinate of the nail location. Use "-32767 -32767" to inherit the node's position.
     pub xy: XYRef,
+    /// Tester Assigned Number. Use "-1" if undefined.
     pub tan: String,
+    /// Tester Interface Name. Use "-1" if undefined.
     pub tin: String,
+    /// Probe type (e.g., "100T", "75C"). Use "-1" if undefined.
     pub probe: String,
+    /// The layer on which the probe is applied. Only [Layer::Top] or [Layer::Bottom] are valid.
     pub layer: Layer,
 }
 
@@ -87,10 +99,14 @@ impl NailLoc {
     }
 }
 
+/// A signal or net defined in the `SIGNALS` section, representing electrical connectivity.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Signal {
+    /// The unique name of the signal or net, used in the `ROUTES` section.
     pub name: String,
+    /// A list of [Node] objects defining the connections to components and pins.
     pub nodes: Vec<Node>,
+    /// A list of [NailLoc] objects defining preferred test point locations for this signal.
     pub nail_locations: Vec<NailLoc>,
 }
 
@@ -191,10 +207,12 @@ impl SignalsParser {
     }
 }
 
-/// Represents the `SIGNALS` section of a GenCAD file.
+/// Represents the `SIGNALS` section of a GenCAD file, defining all connectivity information.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Signals {
+    /// A list of all defined signals and their connections.
     pub signals: Vec<Signal>,
+    /// Additional metadata associated with the `SIGNALS` section.
     pub attributes: Vec<Attribute>,
 }
 
