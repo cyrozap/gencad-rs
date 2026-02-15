@@ -25,7 +25,9 @@
  *
  * This crate provides a full pipeline for working with GenCAD files:
  *
- * 1. [parser]: Converts the decoded bytes into structured data.
+ * 1. [parser]: Converts the file bytes into structured data.
+ * 2. [interpreter]: Interprets the parsed file to create a higher-level
+ *    representation of the objects in the file.
  *
  * ## Usage Example
  *
@@ -34,6 +36,7 @@
  * use std::io::BufReader;
  *
  * use gencad::parser::ParsedGencadFile;
+ * use gencad::interpreter::InterpretedGencadFile;
  *
  * fn main() -> Result<(), Box<dyn std::error::Error>> {
  *     // Open the file
@@ -43,15 +46,17 @@
  *     // Parse the file
  *     let parsed = ParsedGencadFile::new(reader)?;
  *
- *     // Access parsed data
- *     for section in parsed.sections {
- *         println!("{:?}", section);
- *     }
+ *     // Interpret the parsed file
+ *     let interpreted = InterpretedGencadFile::new(parsed)?;
+ *
+ *     // Access interpreted data
+ *     println!("GenCAD version: {}", interpreted.header.gencad_version);
  *
  *     Ok(())
  * }
  * ```
  */
 
+pub mod interpreter;
 pub mod parser;
 pub mod types;
