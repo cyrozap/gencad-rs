@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Module to contain GenCAD section parsers.
+ *  Module to contain GenCAD section parser tests.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,15 +18,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pub mod board;
-pub mod components;
-pub mod devices;
-pub mod header;
-pub mod pads;
-pub mod padstacks;
-pub mod shapes;
-pub mod signals;
-pub mod unknown;
-
-#[cfg(test)]
-mod tests;
+mod board;
+mod components;
+mod devices;
+mod header;
+mod pads;
+mod padstacks;
+mod shapes;
+mod signals;
