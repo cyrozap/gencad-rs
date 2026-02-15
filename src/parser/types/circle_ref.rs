@@ -37,25 +37,3 @@ impl CircleRef {
 pub fn circle_ref(s: &str) -> IResult<&str, CircleRef> {
     map((x_y_ref, preceded(spaces, number)), CircleRef::new).parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_ok() {
-        assert_eq!(
-            circle_ref("1000 -200 10"),
-            Ok((
-                "",
-                CircleRef {
-                    center: XYRef {
-                        x: 1000.0,
-                        y: -200.0
-                    },
-                    radius: 10.0,
-                }
-            ))
-        );
-    }
-}

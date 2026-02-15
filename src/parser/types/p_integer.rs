@@ -30,24 +30,3 @@ pub fn p_integer(s: &str) -> IResult<&str, u16> {
     })
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_integers() {
-        assert_eq!(p_integer("0"), Ok(("", 0u16)));
-        assert_eq!(p_integer("+0"), Ok(("", 0u16)));
-        assert_eq!(p_integer("1"), Ok(("", 1u16)));
-        assert_eq!(p_integer("+1"), Ok(("", 1u16)));
-        assert_eq!(p_integer("65535"), Ok(("", 65535u16)));
-        assert_eq!(p_integer("+65535"), Ok(("", 65535u16)));
-    }
-
-    #[test]
-    fn test_errors() {
-        assert!(p_integer("-1").is_err());
-        assert!(p_integer("65536").is_err());
-    }
-}

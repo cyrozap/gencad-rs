@@ -60,28 +60,3 @@ pub fn dimension(s: &str) -> IResult<&str, Dimension> {
     ))
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(dimension("INCH"), Ok(("", Dimension::Inch)));
-        assert_eq!(dimension("THOU"), Ok(("", Dimension::Thou)));
-        assert_eq!(dimension("MM"), Ok(("", Dimension::Mm)));
-        assert_eq!(dimension("MM100"), Ok(("", Dimension::Mm100)));
-        assert_eq!(dimension("USER 1"), Ok(("", Dimension::User(1))));
-        assert_eq!(dimension("USER +1"), Ok(("", Dimension::User(1))));
-        assert_eq!(dimension("USER 65535"), Ok(("", Dimension::User(65535))));
-        assert_eq!(dimension("USERM 1"), Ok(("", Dimension::UserM(1))));
-        assert_eq!(dimension("USERM +1"), Ok(("", Dimension::UserM(1))));
-        assert_eq!(dimension("USERM 65535"), Ok(("", Dimension::UserM(65535))));
-        assert_eq!(dimension("USERMM 1"), Ok(("", Dimension::UserMm(1))));
-        assert_eq!(dimension("USERMM +1"), Ok(("", Dimension::UserMm(1))));
-        assert_eq!(
-            dimension("USERMM 65535"),
-            Ok(("", Dimension::UserMm(65535)))
-        );
-    }
-}

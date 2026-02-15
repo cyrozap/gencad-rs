@@ -70,37 +70,3 @@ pub fn layer(s: &str) -> IResult<&str, Layer> {
     ))
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(layer("TOP"), Ok(("", Layer::Top)));
-        assert_eq!(layer("BOTTOM"), Ok(("", Layer::Bottom)));
-        assert_eq!(layer("SOLDERMASK_TOP"), Ok(("", Layer::SoldermaskTop)));
-        assert_eq!(
-            layer("SOLDERMASK_BOTTOM"),
-            Ok(("", Layer::SoldermaskBottom))
-        );
-        assert_eq!(layer("SILKSCREEN_TOP"), Ok(("", Layer::SilkscreenTop)));
-        assert_eq!(
-            layer("SILKSCREEN_BOTTOM"),
-            Ok(("", Layer::SilkscreenBottom))
-        );
-        assert_eq!(layer("SOLDERPASTE_TOP"), Ok(("", Layer::SolderpasteTop)));
-        assert_eq!(
-            layer("SOLDERPASTE_BOTTOM"),
-            Ok(("", Layer::SolderpasteBottom))
-        );
-        assert_eq!(layer("INNER"), Ok(("", Layer::Inner)));
-        assert_eq!(layer("ALL"), Ok(("", Layer::All)));
-
-        assert_eq!(layer("POWER1"), Ok(("", Layer::PowerX(1))));
-        assert_eq!(layer("GROUND1"), Ok(("", Layer::GroundX(1))));
-        assert_eq!(layer("INNER1"), Ok(("", Layer::InnerX(1))));
-        assert_eq!(layer("LAYER1"), Ok(("", Layer::LayerX(1))));
-        assert_eq!(layer("LAYERSET1"), Ok(("", Layer::LayersetX(1))));
-    }
-}

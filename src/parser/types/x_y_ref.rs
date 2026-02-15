@@ -37,33 +37,3 @@ impl XYRef {
 pub fn x_y_ref(s: &str) -> IResult<&str, XYRef> {
     map(separated_pair(number, spaces, number), XYRef::new).parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        // Examples from the standard
-        assert_eq!(
-            x_y_ref("1200 +3000"),
-            Ok((
-                "",
-                XYRef {
-                    x: 1200.0,
-                    y: 3000.0,
-                }
-            ))
-        );
-        assert_eq!(
-            x_y_ref("1.2005 0.0035"),
-            Ok((
-                "",
-                XYRef {
-                    x: 1.2005,
-                    y: 0.0035,
-                }
-            ))
-        );
-    }
-}

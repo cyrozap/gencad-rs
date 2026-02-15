@@ -41,26 +41,3 @@ pub fn rectangle_ref(s: &str) -> IResult<&str, RectangleRef> {
     )
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_ok() {
-        assert_eq!(
-            rectangle_ref("1000 -200 20 -10"),
-            Ok((
-                "",
-                RectangleRef {
-                    origin: XYRef {
-                        x: 1000.0,
-                        y: -200.0
-                    },
-                    x: 20.0,
-                    y: -10.0,
-                }
-            ))
-        );
-    }
-}

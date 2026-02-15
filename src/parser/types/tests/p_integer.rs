@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Parser for the GenCAD boolean data types.
+ *  Parser tests for the GenCAD p_integer data type.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,20 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::value;
-use nom::{IResult, Parser};
+use super::super::*;
 
-macro_rules! bool_parser {
-    ($name:ident, $true_value:expr) => {
-        pub fn $name(s: &str) -> IResult<&str, bool> {
-            alt((value(false, tag("0")), value(true, tag($true_value)))).parse(s)
-        }
-    };
+#[test]
+fn test_integers() {
+    assert_eq!(p_integer("0"), Ok(("", 0u16)));
+    assert_eq!(p_integer("+0"), Ok(("", 0u16)));
+    assert_eq!(p_integer("1"), Ok(("", 1u16)));
+    assert_eq!(p_integer("+1"), Ok(("", 1u16)));
+    assert_eq!(p_integer("65535"), Ok(("", 65535u16)));
+    assert_eq!(p_integer("+65535"), Ok(("", 65535u16)));
 }
 
-bool_parser!(filled_ref, "YES");
-bool_parser!(flip, "FLIP");
+#[test]
+fn test_errors() {
+    assert!(p_integer("-1").is_err());
+    assert!(p_integer("65536").is_err());
+}

@@ -39,21 +39,3 @@ pub fn pad_type(s: &str) -> IResult<&str, PadType> {
     ))
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(pad_type("FINGER"), Ok(("", PadType::Finger)));
-        assert_eq!(pad_type("ROUND"), Ok(("", PadType::Round)));
-        assert_eq!(pad_type("ANNULAR"), Ok(("", PadType::Annular)));
-        assert_eq!(pad_type("BULLET"), Ok(("", PadType::Bullet)));
-        assert_eq!(pad_type("RECTANGULAR"), Ok(("", PadType::Rectangular)));
-        assert_eq!(pad_type("HEXAGON"), Ok(("", PadType::Hexagon)));
-        assert_eq!(pad_type("OCTAGON"), Ok(("", PadType::Octagon)));
-        assert_eq!(pad_type("POLYGON"), Ok(("", PadType::Polygon)));
-        assert_eq!(pad_type("UNKNOWN"), Ok(("", PadType::Unknown)));
-    }
-}

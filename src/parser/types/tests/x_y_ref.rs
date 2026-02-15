@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Parser for the GenCAD boolean data types.
+ *  Parser tests for the GenCAD x_y_ref data type.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,31 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::value;
-use nom::{IResult, Parser};
+use super::super::*;
 
-macro_rules! bool_parser {
-    ($name:ident, $true_value:expr) => {
-        pub fn $name(s: &str) -> IResult<&str, bool> {
-            alt((value(false, tag("0")), value(true, tag($true_value)))).parse(s)
-        }
-    };
+use crate::types::XYRef;
+
+#[test]
+fn tests_standard() {
+    // Examples from the standard
+    assert_eq!(
+        x_y_ref("1200 +3000"),
+        Ok((
+            "",
+            XYRef {
+                x: 1200.0,
+                y: 3000.0,
+            }
+        ))
+    );
+    assert_eq!(
+        x_y_ref("1.2005 0.0035"),
+        Ok((
+            "",
+            XYRef {
+                x: 1.2005,
+                y: 0.0035,
+            }
+        ))
+    );
 }
-
-bool_parser!(filled_ref, "YES");
-bool_parser!(flip, "FLIP");

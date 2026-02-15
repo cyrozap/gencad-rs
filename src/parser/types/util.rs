@@ -24,17 +24,3 @@ use nom::{IResult, Parser};
 pub fn spaces(s: &str) -> IResult<&str, &str> {
     take_while1(|c| c == ' ').parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_spaces() {
-        assert_eq!(spaces("     "), Ok(("", "     ")));
-        assert_eq!(spaces("   a  "), Ok(("a  ", "   ")));
-
-        assert!(spaces("").is_err());
-        assert!(spaces("a").is_err());
-    }
-}

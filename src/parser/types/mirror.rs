@@ -33,15 +33,3 @@ pub fn mirror(s: &str) -> IResult<&str, Mirror> {
     ))
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn tests_standard() {
-        assert_eq!(mirror("0"), Ok(("", Mirror::Not)));
-        assert_eq!(mirror("MIRRORX"), Ok(("", Mirror::MirrorX)));
-        assert_eq!(mirror("MIRRORY"), Ok(("", Mirror::MirrorY)));
-    }
-}

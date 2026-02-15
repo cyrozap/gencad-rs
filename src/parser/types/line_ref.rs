@@ -37,28 +37,3 @@ impl LineRef {
 pub fn line_ref(s: &str) -> IResult<&str, LineRef> {
     map((x_y_ref, preceded(spaces, x_y_ref)), LineRef::new).parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_ok() {
-        assert_eq!(
-            line_ref("1000 -200 200 -1000"),
-            Ok((
-                "",
-                LineRef {
-                    start: XYRef {
-                        x: 1000.0,
-                        y: -200.0
-                    },
-                    end: XYRef {
-                        x: 200.0,
-                        y: -1000.0
-                    },
-                }
-            ))
-        );
-    }
-}

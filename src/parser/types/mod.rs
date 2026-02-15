@@ -36,6 +36,9 @@ mod text_par;
 pub mod util;
 mod x_y_ref;
 
+#[cfg(test)]
+mod tests;
+
 pub use aliases::*;
 pub use arc_ref::*;
 pub use attrib_ref::*;

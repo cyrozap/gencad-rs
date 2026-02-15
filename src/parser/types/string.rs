@@ -177,33 +177,4 @@ mod tests {
         assert_eq!(unquoted_string("V3\"'😀"), Ok(("😀", "V3\"'")));
         assert_eq!(unquoted_string("A'😀A4%"), Ok(("😀A4%", "A'")));
     }
-
-    #[test]
-    fn test_string() {
-        // Unquoted strings
-        assert_eq!(string(""), Ok(("", "".to_string())));
-        assert_eq!(string("A"), Ok(("", "A".to_string())));
-        assert_eq!(string(r#"A""#), Ok(("", r#"A""#.to_string())));
-
-        // Quoted strings
-        assert_eq!(string(r#""A\"""#), Ok(("", "A\"".to_string())));
-        assert_eq!(
-            string(r#""ABCD EFGH \IJKL\ \"MNOP\" QRST WXYZ""#),
-            Ok(("", "ABCD EFGH \\IJKL\\ \"MNOP\" QRST WXYZ".to_string()))
-        );
-
-        // Examples from the standard
-        assert_eq!(
-            string(r#""Mitron Europe Ltd. Serial Number 00001""#),
-            Ok(("", "Mitron Europe Ltd. Serial Number 00001".to_string()))
-        );
-        assert_eq!(
-            string(r#""Modem C100 motherboard 1234-5678""#),
-            Ok(("", "Modem C100 motherboard 1234-5678".to_string()))
-        );
-        assert_eq!(
-            string(r#""Rev 566g 20th September 1990""#),
-            Ok(("", "Rev 566g 20th September 1990".to_string()))
-        );
-    }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /*
- *  Parser for the GenCAD boolean data types.
+ *  Module to contain GenCAD type parser tests.
  *  Copyright (C) 2026  Forest Crossman <cyrozap@gmail.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use nom::branch::alt;
-use nom::bytes::complete::tag;
-use nom::combinator::value;
-use nom::{IResult, Parser};
-
-macro_rules! bool_parser {
-    ($name:ident, $true_value:expr) => {
-        pub fn $name(s: &str) -> IResult<&str, bool> {
-            alt((value(false, tag("0")), value(true, tag($true_value)))).parse(s)
-        }
-    };
-}
-
-bool_parser!(filled_ref, "YES");
-bool_parser!(flip, "FLIP");
+mod arc_ref;
+mod attrib_ref;
+mod booleans;
+mod circle_ref;
+mod dimension;
+mod layer;
+mod line_ref;
+mod mirror;
+mod number;
+mod p_integer;
+mod pad_type;
+mod rectangle_ref;
+mod string;
+mod text_par;
+mod util;
+mod x_y_ref;

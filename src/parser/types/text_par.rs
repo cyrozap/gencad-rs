@@ -55,32 +55,3 @@ pub fn text_par(s: &str) -> IResult<&str, TextPar> {
     )
     .parse(s)
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::types::XYRef;
-
-    use super::*;
-
-    #[test]
-    fn test_ok() {
-        assert_eq!(
-            text_par("1 2 0 SILKSCREEN_TOP \"Test String\" -10 -20 20 40"),
-            Ok((
-                "",
-                TextPar {
-                    text_size: 1.0,
-                    rotation: 2.0,
-                    mirror: Mirror::Not,
-                    layer: Layer::SilkscreenTop,
-                    text: "Test String".to_string(),
-                    area: RectangleRef {
-                        origin: XYRef { x: -10.0, y: -20.0 },
-                        x: 20.0,
-                        y: 40.0
-                    },
-                }
-            ))
-        );
-    }
-}
