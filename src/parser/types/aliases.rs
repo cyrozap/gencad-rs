@@ -56,8 +56,6 @@ number_alias!(height);
 
 string_alias!(pad_name);
 
-string_alias!(part_name);
-
 string_alias!(pin_name);
 
 string_alias!(probe);

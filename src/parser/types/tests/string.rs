@@ -48,3 +48,28 @@ fn test_string() {
         Ok(("", "Rev 566g 20th September 1990".to_string()))
     );
 }
+
+#[test]
+fn test_part_name() {
+    // Unquoted strings
+    assert_eq!(part_name(""), Ok(("", "".to_string())));
+    assert_eq!(part_name("A"), Ok(("", "A".to_string())));
+    assert_eq!(part_name(r#"A""#), Ok(("", r#"A""#.to_string())));
+
+    // Quoted strings
+    assert_eq!(part_name(r#""A\"""#), Ok(("", "A\"".to_string())));
+    assert_eq!(
+        part_name(r#""ABCD EFGH \IJKL\ \"MNOP\" QRST WXYZ""#),
+        Ok(("", "ABCD EFGH \\IJKL\\ \"MNOP\" QRST WXYZ".to_string()))
+    );
+
+    // Improperly unquoted strings
+    assert_eq!(
+        part_name("Device PANEL"),
+        Ok(("", "Device PANEL".to_string()))
+    );
+    assert_eq!(
+        part_name("Device LGA1718"),
+        Ok(("", "Device LGA1718".to_string()))
+    );
+}

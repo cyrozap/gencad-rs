@@ -92,6 +92,17 @@ pub fn string(s: &str) -> IResult<&str, String> {
     alt((map(unquoted_string, |x| x.to_string()), quoted_string)).parse(s)
 }
 
+pub fn part_name(s: &str) -> IResult<&str, String> {
+    let (remaining, part) = string(s)?;
+    if !remaining.is_empty() {
+        // Sometimes the part name is an unquoted string containing spaces, so it doesn't get parsed completely.
+        return Ok(("", s.to_string()));
+    }
+
+    // A properly parsed part name.
+    Ok((remaining, part))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

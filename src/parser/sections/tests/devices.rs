@@ -83,3 +83,42 @@ fn test_example_devices() {
         }]
     );
 }
+
+#[test]
+fn test_device_with_improperly_formatted_strings() {
+    // Seen in a real GenCAD file.
+
+    let params = vec![
+        KeywordParam {
+            keyword: "DEVICE",
+            parameter: "Device PANEL",
+        },
+        KeywordParam {
+            keyword: "PART",
+            parameter: "HEADER 2X10P G/F 2.54 BLK/C//LONG SHOUNG/1102014270",
+        },
+    ];
+
+    let devices = parse_devices(&params).unwrap();
+
+    assert_eq!(
+        devices,
+        vec![Device {
+            name: "Device PANEL".to_string(),
+            part: Some("HEADER 2X10P G/F 2.54 BLK/C//LONG SHOUNG/1102014270".to_string()),
+            dtype: None,
+            style: None,
+            package: None,
+            pin_descriptions: vec![],
+            pin_functions: vec![],
+            pincount: None,
+            value: None,
+            tol: None,
+            ntol: None,
+            ptol: None,
+            volts: None,
+            desc: None,
+            attributes: vec![]
+        }]
+    );
+}

@@ -169,3 +169,60 @@ fn test_example_components() {
         ]
     );
 }
+
+#[test]
+fn test_component_with_improperly_formatted_strings() {
+    // Seen in a real GenCAD file.
+
+    let params = vec![
+        KeywordParam {
+            keyword: "COMPONENT",
+            parameter: "LGA1718",
+        },
+        KeywordParam {
+            keyword: "PLACE",
+            parameter: "5073.52 8389.53",
+        },
+        KeywordParam {
+            keyword: "LAYER",
+            parameter: "TOP",
+        },
+        KeywordParam {
+            keyword: "ROTATION",
+            parameter: "0",
+        },
+        KeywordParam {
+            keyword: "SHAPE",
+            parameter: "LGA1718 0 0",
+        },
+        KeywordParam {
+            keyword: "DEVICE",
+            parameter: "Device LGA1718",
+        },
+    ];
+
+    let components = parse_components(&params).unwrap();
+
+    assert_eq!(
+        components,
+        vec![Component {
+            name: "LGA1718".to_string(),
+            device: "Device LGA1718".to_string(),
+            place: XYRef {
+                x: 5073.52,
+                y: 8389.53
+            },
+            layer: Layer::Top,
+            rotation: 0.0,
+            shape: Shape {
+                name: "LGA1718".to_string(),
+                mirror: Mirror::Not,
+                flip: false
+            },
+            subcomponents: vec![],
+            texts: vec![],
+            sheet: None,
+            attributes: vec![]
+        },]
+    );
+}
