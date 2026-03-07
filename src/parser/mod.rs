@@ -70,11 +70,11 @@ use sections::signals::Signals;
 use sections::unknown::Unknown;
 
 fn take_newlines(input: &[u8]) -> IResult<&[u8], ()> {
-    // Need to consume CR until first LF, then consume all following CRs and LFs
+    // Need to consume CR until first LF, then consume all following CRs, LFs, and nulls
     let (remaining, _) = (
         take_while(|c| c == b'\r'),
         take_while1(AsChar::is_newline),
-        take_while(|c| c == b'\r' || c == b'\n'),
+        take_while(|c| c == b'\r' || c == b'\n' || c == b'\0'),
     )
         .parse(input)?;
     Ok((remaining, ()))
@@ -241,6 +241,8 @@ mod tests {
             take_newlines(b"\r\n\n\r\r\r\n\n\n\r\n\r\n"),
             Ok((b"".as_slice(), ()))
         );
+        assert_eq!(take_newlines(b"\r\n\r\n\0\r\n"), Ok((b"".as_slice(), ())));
+        assert_eq!(take_newlines(b"\r\n\r\n\0\0\n"), Ok((b"".as_slice(), ())));
         assert_eq!(take_newlines(b"\nfoo"), Ok((b"foo".as_slice(), ())));
         assert!(take_newlines(b"foo").is_err());
     }
