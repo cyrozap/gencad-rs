@@ -226,3 +226,123 @@ impl ParsedGencadFile {
         Ok(Self { sections })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_take_newlines() {
+        assert_eq!(take_newlines(b"\n"), Ok((b"".as_slice(), ())));
+        assert_eq!(take_newlines(b"\n\r"), Ok((b"".as_slice(), ())));
+        assert_eq!(take_newlines(b"\r\n"), Ok((b"".as_slice(), ())));
+        assert_eq!(take_newlines(b"\r\n\r\n"), Ok((b"".as_slice(), ())));
+        assert_eq!(
+            take_newlines(b"\r\n\n\r\r\r\n\n\n\r\n\r\n"),
+            Ok((b"".as_slice(), ()))
+        );
+        assert_eq!(take_newlines(b"\nfoo"), Ok((b"foo".as_slice(), ())));
+        assert!(take_newlines(b"foo").is_err());
+    }
+
+    #[test]
+    fn test_keyword() {
+        assert_eq!(
+            keyword(b"KEYWORD"),
+            Ok((b"".as_slice(), b"KEYWORD".as_slice()))
+        );
+        assert_eq!(
+            keyword(b"KEYWORD "),
+            Ok((b" ".as_slice(), b"KEYWORD".as_slice()))
+        );
+        assert!(keyword(b"keyword").is_err());
+        assert!(keyword(b"123").is_err());
+    }
+
+    #[test]
+    fn test_section_start() {
+        assert_eq!(section_start(b"$HEADER\n"), Ok((b"".as_slice(), "HEADER")));
+        assert_eq!(
+            section_start(b"$HEADER\r\n"),
+            Ok((b"".as_slice(), "HEADER"))
+        );
+        assert!(section_start(b"HEADER\n").is_err());
+        assert!(section_start(b"$header\n").is_err());
+    }
+
+    #[test]
+    fn test_section_end() {
+        assert_eq!(section_end(b"$ENDHEADER\n"), Ok((b"".as_slice(), "HEADER")));
+        assert_eq!(
+            section_end(b"$ENDHEADER\r\n"),
+            Ok((b"".as_slice(), "HEADER"))
+        );
+        assert!(section_end(b"ENDHEADER\n").is_err());
+        assert!(section_end(b"$endheader\n").is_err());
+    }
+
+    #[test]
+    fn test_keyword_param() {
+        assert_eq!(
+            KeywordParam::parse(b"GENCAD 1.4\n"),
+            Ok((
+                b"".as_slice(),
+                KeywordParam {
+                    keyword: "GENCAD",
+                    parameter: "1.4"
+                }
+            ))
+        );
+        assert_eq!(
+            KeywordParam::parse(b"USER \"Mitron Europe Ltd. Serial Number 00001\"\n"),
+            Ok((
+                b"".as_slice(),
+                KeywordParam {
+                    keyword: "USER",
+                    parameter: "\"Mitron Europe Ltd. Serial Number 00001\""
+                }
+            ))
+        );
+        assert_eq!(
+            KeywordParam::parse(b"UNITS INCH\r\n"),
+            Ok((
+                b"".as_slice(),
+                KeywordParam {
+                    keyword: "UNITS",
+                    parameter: "INCH"
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_section() {
+        assert_eq!(
+            Section::parse(
+                b"$HEADER\nGENCAD 1.4\nUSER \"Mitron Europe Ltd. Serial Number 00001\"\nUNITS INCH\n$ENDHEADER\n"
+            ),
+            Ok((
+                b"".as_slice(),
+                Section {
+                    name: "HEADER",
+                    parameters: vec![
+                        KeywordParam {
+                            keyword: "GENCAD",
+                            parameter: "1.4"
+                        },
+                        KeywordParam {
+                            keyword: "USER",
+                            parameter: "\"Mitron Europe Ltd. Serial Number 00001\""
+                        },
+                        KeywordParam {
+                            keyword: "UNITS",
+                            parameter: "INCH"
+                        }
+                    ]
+                }
+            ))
+        );
+        // Test mismatched start/end tags
+        assert!(Section::parse(b"$HEADER\n$ENDFOOTER\n").is_err());
+    }
+}
