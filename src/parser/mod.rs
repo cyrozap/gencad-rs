@@ -69,7 +69,7 @@ use sections::shapes::{Shape, parse_shapes};
 use sections::signals::Signals;
 use sections::unknown::Unknown;
 
-fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
+fn take_newlines(input: &[u8]) -> IResult<&[u8], ()> {
     // Need to consume CR until first LF, then consume all following CRs and LFs
     let (remaining, _) = (
         take_while(|c| c == b'\r'),
@@ -77,7 +77,7 @@ fn take_newlines(input: &[u8]) -> IResult<&[u8], &[u8]> {
         take_while(|c| c == b'\r' || c == b'\n'),
     )
         .parse(input)?;
-    Ok((remaining, &[]))
+    Ok((remaining, ()))
 }
 
 fn keyword(input: &[u8]) -> IResult<&[u8], &[u8]> {
