@@ -54,7 +54,7 @@ pub mod sections;
 mod types;
 
 use nom::bytes::complete::{is_a, tag, take_till, take_while, take_while1};
-use nom::combinator::{fail, map_res};
+use nom::combinator::{fail, map_res, opt};
 use nom::multi::{many0, many1};
 use nom::sequence::delimited;
 use nom::{AsChar, IResult, Parser};
@@ -136,10 +136,12 @@ struct Section<'a> {
 
 impl<'a> Section<'a> {
     fn parse(input: &'a [u8]) -> IResult<&'a [u8], Self> {
-        let (remaining, (start_tag, parameters, end_tag)) =
-            (section_start, many0(KeywordParam::parse), section_end).parse(input)?;
+        let (remaining, (start_tag, parameters, opt_end_tag)) =
+            (section_start, many0(KeywordParam::parse), opt(section_end)).parse(input)?;
 
-        if start_tag != end_tag {
+        if let Some(end_tag) = opt_end_tag
+            && start_tag != end_tag
+        {
             return fail().parse(input);
         }
 
@@ -346,5 +348,74 @@ mod tests {
         );
         // Test mismatched start/end tags
         assert!(Section::parse(b"$HEADER\n$ENDFOOTER\n").is_err());
+    }
+
+    #[test]
+    fn test_incomplete_empty_section() {
+        let expected = vec![
+            Section {
+                name: "BOARD",
+                parameters: vec![],
+            },
+            Section {
+                name: "PADS",
+                parameters: vec![
+                    KeywordParam {
+                        keyword: "KEYWORD",
+                        parameter: "VALUE",
+                    },
+                    KeywordParam {
+                        keyword: "KEYWORD",
+                        parameter: "VALUE",
+                    },
+                    KeywordParam {
+                        keyword: "KEYWORD",
+                        parameter: "VALUE",
+                    },
+                ],
+            },
+        ];
+        assert_eq!(
+            sections(
+                b"$BOARD\r\n$PADS\r\nKEYWORD VALUE\r\nKEYWORD VALUE\r\nKEYWORD VALUE\r\n$ENDPADS\r\n\r\n\0\0\n"
+            ),
+            Ok((b"".as_slice(), expected))
+        );
+    }
+
+    #[test]
+    fn test_incomplete_section() {
+        let expected = vec![
+            Section {
+                name: "BOARD",
+                parameters: vec![KeywordParam {
+                    keyword: "KEYWORD",
+                    parameter: "VALUE",
+                }],
+            },
+            Section {
+                name: "PADS",
+                parameters: vec![
+                    KeywordParam {
+                        keyword: "KEYWORD",
+                        parameter: "VALUE",
+                    },
+                    KeywordParam {
+                        keyword: "KEYWORD",
+                        parameter: "VALUE",
+                    },
+                    KeywordParam {
+                        keyword: "KEYWORD",
+                        parameter: "VALUE",
+                    },
+                ],
+            },
+        ];
+        assert_eq!(
+            sections(
+                b"$BOARD\r\nKEYWORD VALUE\r\n$PADS\r\nKEYWORD VALUE\r\nKEYWORD VALUE\r\nKEYWORD VALUE\r\n$ENDPADS\r\n\r\n\0\0\n"
+            ),
+            Ok((b"".as_slice(), expected))
+        );
     }
 }
