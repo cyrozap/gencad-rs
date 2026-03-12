@@ -1,6 +1,6 @@
 # gencad-rs
 
-_gencad_ is a Rust library for parsing Mitron GenCAD boardview files.
+_gencad_ is a Rust library for parsing Mitron GenCAD `.cad` boardview files.
 
 [![The latest version of the gencad crate on crates.io](https://img.shields.io/crates/v/gencad)](https://crates.io/crates/gencad)
 
