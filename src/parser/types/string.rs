@@ -33,7 +33,8 @@ enum QuotedStringFragment<'a> {
 }
 
 fn is_valid_char(c: char) -> bool {
-    matches!(c, ' '..='~')
+    // Accept all Unicode except control characters
+    !c.is_control()
 }
 
 fn is_valid_char_but_not_backslash_or_quote(c: char) -> bool {
@@ -184,8 +185,12 @@ mod tests {
         assert!(unquoted_string("\"qoY@M;").is_err());
         assert!(unquoted_string(r#""A""#).is_err());
 
-        // No non-ASCII characters
-        assert_eq!(unquoted_string("V3\"'😀"), Ok(("😀", "V3\"'")));
-        assert_eq!(unquoted_string("A'😀A4%"), Ok(("😀A4%", "A'")));
+        // Unicode characters are allowed
+        assert_eq!(unquoted_string("V3\"'😀"), Ok(("", "V3\"'😀")));
+        assert_eq!(unquoted_string("A'😀A4%"), Ok(("", "A'😀A4%")));
+
+        // Control characters are not allowed
+        assert_eq!(unquoted_string("abc\u{0007}def"), Ok(("\u{0007}def", "abc")));
+        assert_eq!(unquoted_string("\u{0001}abc"), Ok(("\u{0001}abc", "")));
     }
 }
