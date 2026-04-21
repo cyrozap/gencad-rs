@@ -20,7 +20,7 @@
 
 use nom::branch::alt;
 use nom::bytes::complete::{take_while, take_while1};
-use nom::character::complete::char;
+use nom::character::complete::{char, satisfy};
 use nom::combinator::{map, not, peek, value};
 use nom::multi::many0;
 use nom::sequence::{delimited, preceded};
@@ -47,8 +47,17 @@ fn is_valid_char_but_not_space(c: char) -> bool {
 
 fn backslash_sequence(s: &str) -> IResult<&str, char> {
     alt((
-        // A backslash before a quote mark becomes a quote mark
-        preceded(char('\\'), value('"', char('"'))),
+        // A backslash before a quote mark becomes a quote mark, only if not at the end and followed by a printable character
+        preceded(
+            char('\\'),
+            preceded(
+                peek((
+                    char('"'),
+                    satisfy(is_valid_char),
+                )),
+                value('"', char('"')),
+            ),
+        ),
         // Backslash before any other character is not an escape sequence--it's just a literal backslash
         value('\\', char('\\')),
     ))
@@ -113,6 +122,8 @@ mod tests {
         assert_eq!(backslash_sequence(r#"\;"#), Ok((";", '\\')));
         assert_eq!(backslash_sequence(r#"\\;"#), Ok((r#"\;"#, '\\')));
         assert_eq!(backslash_sequence(r#"\";"#), Ok((";", '"')));
+        assert_eq!(backslash_sequence(r#"\""#), Ok(("\"", '\\')));
+        assert_eq!(backslash_sequence(r#"\"#), Ok(("", '\\')));
     }
 
     #[test]
