@@ -21,7 +21,7 @@
 use super::super::components::*;
 
 use crate::parser::KeywordParam;
-use crate::types::{Layer, Mirror, RectangleRef, TextPar, XYRef};
+use crate::types::{Attribute, Layer, Mirror, RectangleRef, TextPar, XYRef};
 
 #[test]
 fn test_example_components() {
@@ -223,6 +223,98 @@ fn test_component_with_improperly_formatted_strings() {
             texts: vec![],
             sheet: None,
             attributes: vec![]
+        },]
+    );
+}
+
+#[test]
+fn test_component_with_multiple_attributes() {
+    let params = vec![
+        KeywordParam {
+            keyword: "COMPONENT",
+            parameter: "Foo",
+        },
+        KeywordParam {
+            keyword: "PLACE",
+            parameter: "0.0 1.0",
+        },
+        KeywordParam {
+            keyword: "LAYER",
+            parameter: "TOP",
+        },
+        KeywordParam {
+            keyword: "ROTATION",
+            parameter: "0",
+        },
+        KeywordParam {
+            keyword: "SHAPE",
+            parameter: "Foo 0 0",
+        },
+        KeywordParam {
+            keyword: "DEVICE",
+            parameter: "Device Foo",
+        },
+        KeywordParam {
+            keyword: "ATTRIBUTE",
+            parameter: r#"COMPONENT_1 "OperatingTemp" "-40°C - +85°C""#,
+        },
+        KeywordParam {
+            keyword: "ATTRIBUTE",
+            parameter: r#"COMPONENT_2 "Technology" "SMD""#,
+        },
+        KeywordParam {
+            keyword: "ATTRIBUTE",
+            parameter: r#"COMPONENT_3 "Manufacturer" "Foobar Tech.""#,
+        },
+        KeywordParam {
+            keyword: "ATTRIBUTE",
+            parameter: r#"COMPONENT_4 "ComponentLinkUrl" "\\foobar.tech\unc\path\which\ends\with\a\backslash\""#,
+        },
+    ];
+
+    let components = parse_components(&params).unwrap();
+
+    assert_eq!(
+        components,
+        vec![Component {
+            name: "Foo".to_string(),
+            device: "Device Foo".to_string(),
+            place: XYRef {
+                x: 0.0,
+                y: 1.0
+            },
+            layer: Layer::Top,
+            rotation: 0.0,
+            shape: Shape {
+                name: "Foo".to_string(),
+                mirror: Mirror::Not,
+                flip: false
+            },
+            subcomponents: vec![],
+            texts: vec![],
+            sheet: None,
+            attributes: vec![
+                Attribute {
+                    category: "COMPONENT_1".to_string(),
+                    name: "OperatingTemp".to_string(),
+                    data: "-40°C - +85°C".to_string()
+                },
+                Attribute {
+                    category: "COMPONENT_2".to_string(),
+                    name: "Technology".to_string(),
+                    data: "SMD".to_string()
+                },
+                Attribute {
+                    category: "COMPONENT_3".to_string(),
+                    name: "Manufacturer".to_string(),
+                    data: "Foobar Tech.".to_string()
+                },
+                Attribute {
+                    category: "COMPONENT_4".to_string(),
+                    name: "ComponentLinkUrl".to_string(),
+                    data: r#"\\foobar.tech\unc\path\which\ends\with\a\backslash\"#.to_string()
+                },
+            ],
         },]
     );
 }
