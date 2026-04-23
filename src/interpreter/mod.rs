@@ -59,6 +59,7 @@ use crate::parser::sections::header::Header;
 use crate::parser::sections::pads::Pad;
 use crate::parser::sections::padstacks::Padstack;
 use crate::parser::sections::shapes::Shape;
+use crate::parser::sections::signals::Signal;
 use crate::parser::{ParsedGencadFile, ParsedSection};
 
 /// A fully interpreted GenCAD file.
@@ -70,6 +71,7 @@ pub struct InterpretedGencadFile {
     pub shapes: HashMap<String, Shape>,
     pub components: HashMap<String, Component>,
     pub devices: HashMap<String, Device>,
+    pub signals: HashMap<String, Signal>,
 }
 
 impl InterpretedGencadFile {
@@ -80,6 +82,7 @@ impl InterpretedGencadFile {
         let mut shapes_section = None;
         let mut components_section = None;
         let mut devices_section = None;
+        let mut signals_section = None;
 
         for section in parsed.sections {
             match section {
@@ -89,6 +92,7 @@ impl InterpretedGencadFile {
                 ParsedSection::Shapes(s) => shapes_section = Some(s),
                 ParsedSection::Components(s) => components_section = Some(s),
                 ParsedSection::Devices(s) => devices_section = Some(s),
+                ParsedSection::Signals(s) => signals_section = Some(s),
                 _ => (),
             }
         }
@@ -131,6 +135,13 @@ impl InterpretedGencadFile {
             }
         }
 
+        let mut signals = HashMap::new();
+        if let Some(s) = signals_section {
+            for signal in s.signals {
+                signals.insert(signal.name.clone(), signal);
+            }
+        }
+
         Ok(Self {
             header,
             pads,
@@ -138,6 +149,7 @@ impl InterpretedGencadFile {
             shapes,
             components,
             devices,
+            signals,
         })
     }
 }
