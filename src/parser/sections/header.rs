@@ -109,11 +109,11 @@ impl Header {
 
         let gencad_version = gencad_version.ok_or("missing GENCAD")?;
         let user = user.ok_or("missing USER")?;
-        let revision = revision.ok_or("missing REVISION")?;
         let units = units.ok_or("missing UNITS")?;
         let origin = origin.ok_or("missing ORIGIN")?;
-        let intertrack = intertrack.ok_or("missing INTERTRACK")?;
 
+        let intertrack = intertrack.unwrap_or_default();
+        let revision = revision.unwrap_or_default();
         let drawing = drawing.unwrap_or_default();
 
         Ok(Self {
