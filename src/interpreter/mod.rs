@@ -53,6 +53,7 @@
 
 use std::collections::HashMap;
 
+use crate::parser::sections::board::Board;
 use crate::parser::sections::components::Component;
 use crate::parser::sections::devices::Device;
 use crate::parser::sections::header::Header;
@@ -66,6 +67,7 @@ use crate::parser::{ParsedGencadFile, ParsedSection};
 #[derive(Debug, Clone, PartialEq)]
 pub struct InterpretedGencadFile {
     pub header: Header,
+    pub board: Board,
     pub pads: HashMap<String, Pad>,
     pub padstacks: HashMap<String, Padstack>,
     pub shapes: HashMap<String, Shape>,
@@ -77,6 +79,7 @@ pub struct InterpretedGencadFile {
 impl InterpretedGencadFile {
     pub fn new(parsed: ParsedGencadFile) -> Result<Self, Box<dyn std::error::Error>> {
         let mut header_section = None;
+        let mut board_section = None;
         let mut pads_section = None;
         let mut padstacks_section = None;
         let mut shapes_section = None;
@@ -87,6 +90,7 @@ impl InterpretedGencadFile {
         for section in parsed.sections {
             match section {
                 ParsedSection::Header(s) => header_section = Some(s),
+                ParsedSection::Board(s) => board_section = Some(s),
                 ParsedSection::Pads(s) => pads_section = Some(s),
                 ParsedSection::Padstacks(s) => padstacks_section = Some(s),
                 ParsedSection::Shapes(s) => shapes_section = Some(s),
@@ -99,6 +103,9 @@ impl InterpretedGencadFile {
 
         let header =
             header_section.ok_or_else(|| "Missing header section in GenCAD file".to_owned())?;
+
+        let board =
+            board_section.ok_or_else(|| "Missing board section in GenCAD file".to_owned())?;
 
         let mut pads = HashMap::new();
         if let Some(pads_vec) = pads_section {
@@ -144,6 +151,7 @@ impl InterpretedGencadFile {
 
         Ok(Self {
             header,
+            board,
             pads,
             padstacks,
             shapes,
