@@ -20,7 +20,7 @@
 
 use nom::branch::alt;
 use nom::bytes::complete::{take_while, take_while1};
-use nom::character::complete::char;
+use nom::character::complete::{char, satisfy};
 use nom::combinator::{map, not, peek, value};
 use nom::multi::many0;
 use nom::sequence::{delimited, preceded};
@@ -33,7 +33,8 @@ enum QuotedStringFragment<'a> {
 }
 
 fn is_valid_char(c: char) -> bool {
-    matches!(c, ' '..='~')
+    // Accept all Unicode except control characters
+    !c.is_control()
 }
 
 fn is_valid_char_but_not_backslash_or_quote(c: char) -> bool {
@@ -46,8 +47,17 @@ fn is_valid_char_but_not_space(c: char) -> bool {
 
 fn backslash_sequence(s: &str) -> IResult<&str, char> {
     alt((
-        // A backslash before a quote mark becomes a quote mark
-        preceded(char('\\'), value('"', char('"'))),
+        // A backslash before a quote mark becomes a quote mark, only if not at the end and followed by a printable character
+        preceded(
+            char('\\'),
+            preceded(
+                peek((
+                    char('"'),
+                    satisfy(is_valid_char),
+                )),
+                value('"', char('"')),
+            ),
+        ),
         // Backslash before any other character is not an escape sequence--it's just a literal backslash
         value('\\', char('\\')),
     ))
@@ -112,6 +122,8 @@ mod tests {
         assert_eq!(backslash_sequence(r#"\;"#), Ok((";", '\\')));
         assert_eq!(backslash_sequence(r#"\\;"#), Ok((r#"\;"#, '\\')));
         assert_eq!(backslash_sequence(r#"\";"#), Ok((";", '"')));
+        assert_eq!(backslash_sequence(r#"\""#), Ok(("\"", '\\')));
+        assert_eq!(backslash_sequence(r#"\"#), Ok(("", '\\')));
     }
 
     #[test]
@@ -184,8 +196,12 @@ mod tests {
         assert!(unquoted_string("\"qoY@M;").is_err());
         assert!(unquoted_string(r#""A""#).is_err());
 
-        // No non-ASCII characters
-        assert_eq!(unquoted_string("V3\"'😀"), Ok(("😀", "V3\"'")));
-        assert_eq!(unquoted_string("A'😀A4%"), Ok(("😀A4%", "A'")));
+        // Unicode characters are allowed
+        assert_eq!(unquoted_string("V3\"'😀"), Ok(("", "V3\"'😀")));
+        assert_eq!(unquoted_string("A'😀A4%"), Ok(("", "A'😀A4%")));
+
+        // Control characters are not allowed
+        assert_eq!(unquoted_string("abc\u{0007}def"), Ok(("\u{0007}def", "abc")));
+        assert_eq!(unquoted_string("\u{0001}abc"), Ok(("\u{0001}abc", "")));
     }
 }

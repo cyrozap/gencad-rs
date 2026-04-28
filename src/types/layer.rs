@@ -47,6 +47,8 @@ pub enum Layer {
     InnerX(u16),
     /// All copper layers of the board.
     All,
+    /// Drill layer to  define pads for through-hole components and vias.
+    Drill,
     /// Specific layers that cannot be defined by the other parameters.
     LayerX(u16),
     /// Sets of layers.

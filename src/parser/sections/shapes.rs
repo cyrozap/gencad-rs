@@ -65,6 +65,8 @@ pub enum Insert {
     Conn,
     /// Surface-mount device package.
     Smd,
+    /// Surface-mount threaded inserts or standoffs.
+    Smt,
     /// Package styles other than through-hole or surface-mount.
     Other,
 }
@@ -72,7 +74,7 @@ pub enum Insert {
 impl Insert {
     fn new(s: &str) -> Result<Self, String> {
         match s {
-            "TH" => Ok(Self::Th),
+            "TH" | "THMT" => Ok(Self::Th),
             "AXIAL" => Ok(Self::Axial),
             "RADIAL" => Ok(Self::Radial),
             "DIP" => Ok(Self::Dip),
@@ -80,7 +82,8 @@ impl Insert {
             "ZIP" => Ok(Self::Zip),
             "CONN" => Ok(Self::Conn),
             "SMD" => Ok(Self::Smd),
-            "OTHER" => Ok(Self::Other),
+            "SMT" => Ok(Self::Smt),
+            "OTHER" | "Other" => Ok(Self::Other),
             _ => Err(format!("Unexpected INSERT statement: {}", s)),
         }
     }

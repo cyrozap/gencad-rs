@@ -21,7 +21,7 @@
 use std::str::FromStr;
 
 use nom::branch::alt;
-use nom::bytes::complete::tag;
+use nom::bytes::complete::tag_no_case;
 use nom::character::complete::digit1;
 use nom::combinator::{map_res, value};
 use nom::{IResult, Parser};
@@ -33,11 +33,11 @@ impl Layer {
         let (k, v) = user;
         let n: u16 = u16::from_str(v).map_err(|_| "Failed to parse u16")?;
         match k {
-            "POWER" => Ok(Self::PowerX(n)),
-            "GROUND" => Ok(Self::GroundX(n)),
-            "INNER" => Ok(Self::InnerX(n)),
-            "LAYER" => Ok(Self::LayerX(n)),
-            "LAYERSET" => Ok(Self::LayersetX(n)),
+            "POWER" | "power" => Ok(Self::PowerX(n)),
+            "GROUND" | "ground" => Ok(Self::GroundX(n)),
+            "INNER" | "inner" => Ok(Self::InnerX(n)),
+            "LAYER" | "layer" => Ok(Self::LayerX(n)),
+            "LAYERSET" | "layerset" => Ok(Self::LayersetX(n)),
             _ => panic!("This should never happen!"),
         }
     }
@@ -47,25 +47,26 @@ pub fn layer(s: &str) -> IResult<&str, Layer> {
     alt((
         map_res(
             alt((
-                (tag("POWER"), digit1),
-                (tag("GROUND"), digit1),
-                (tag("INNER"), digit1),
-                (tag("LAYER"), digit1),
-                (tag("LAYERSET"), digit1),
+                (tag_no_case("POWER"), digit1),
+                (tag_no_case("GROUND"), digit1),
+                (tag_no_case("INNER"), digit1),
+                (tag_no_case("LAYER"), digit1),
+                (tag_no_case("LAYERSET"), digit1),
             )),
             Layer::from_pair,
         ),
         alt((
-            value(Layer::Top, tag("TOP")),
-            value(Layer::Bottom, tag("BOTTOM")),
-            value(Layer::SoldermaskTop, tag("SOLDERMASK_TOP")),
-            value(Layer::SoldermaskBottom, tag("SOLDERMASK_BOTTOM")),
-            value(Layer::SilkscreenTop, tag("SILKSCREEN_TOP")),
-            value(Layer::SilkscreenBottom, tag("SILKSCREEN_BOTTOM")),
-            value(Layer::SolderpasteTop, tag("SOLDERPASTE_TOP")),
-            value(Layer::SolderpasteBottom, tag("SOLDERPASTE_BOTTOM")),
-            value(Layer::Inner, tag("INNER")),
-            value(Layer::All, tag("ALL")),
+            value(Layer::Top, tag_no_case("TOP")),
+            value(Layer::Bottom, tag_no_case("BOTTOM")),
+            value(Layer::SoldermaskTop, tag_no_case("SOLDERMASK_TOP")),
+            value(Layer::SoldermaskBottom, tag_no_case("SOLDERMASK_BOTTOM")),
+            value(Layer::SilkscreenTop, tag_no_case("SILKSCREEN_TOP")),
+            value(Layer::SilkscreenBottom, tag_no_case("SILKSCREEN_BOTTOM")),
+            value(Layer::SolderpasteTop, tag_no_case("SOLDERPASTE_TOP")),
+            value(Layer::SolderpasteBottom, tag_no_case("SOLDERPASTE_BOTTOM")),
+            value(Layer::Inner, tag_no_case("INNER")),
+            value(Layer::All, tag_no_case("ALL")),
+            value(Layer::Drill, tag_no_case("DRILL")),
         )),
     ))
     .parse(s)

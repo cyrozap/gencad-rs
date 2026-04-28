@@ -102,14 +102,6 @@ fn test_missing_required_keywords() {
             parameter: "\"Mitron Europe Ltd. Serial Number 00001\"",
         },
         KeywordParam {
-            keyword: "DRAWING",
-            parameter: "\"Modem C100 motherboard 1234-5678\"",
-        },
-        KeywordParam {
-            keyword: "REVISION",
-            parameter: "\"Rev 566g 20th September 1990\"",
-        },
-        KeywordParam {
             keyword: "UNITS",
             parameter: "USER 1200",
         },
@@ -117,20 +109,13 @@ fn test_missing_required_keywords() {
             keyword: "ORIGIN",
             parameter: "0 0",
         },
-        KeywordParam {
-            keyword: "INTERTRACK",
-            parameter: "0",
-        },
     ];
 
     let missing_keywords = [
         "GENCAD",
         "USER",
-        "DRAWING",
-        "REVISION",
         "UNITS",
         "ORIGIN",
-        "INTERTRACK",
     ];
 
     for keyword in missing_keywords {

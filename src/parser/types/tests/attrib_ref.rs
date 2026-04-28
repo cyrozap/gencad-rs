@@ -60,3 +60,18 @@ fn test_ok() {
         ))
     );
 }
+
+#[test]
+fn test_attrib_ref_quoted() {
+    assert_eq!(
+        attrib_ref(r#"COMPONENT "OperatingTemp" "-40°C - +85°C""#),
+        Ok((
+            "",
+            Attribute {
+                category: "COMPONENT".to_string(),
+                name: "OperatingTemp".to_string(),
+                data: "-40°C - +85°C".to_string()
+            }
+        ))
+    );
+}
